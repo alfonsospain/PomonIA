@@ -1,0 +1,2244 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>POMONIA — Herramienta terminográfica</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="color-scheme" content="light" />
+  <style>
+    /* Pequeños ajustes de accesibilidad */
+    :focus-visible { outline: 3px solid rgba(34,197,94,.55); outline-offset: 2px; }
+    .sr-only-focusable:active, .sr-only-focusable:focus { position: static; width: auto; height: auto; margin: 0; overflow: visible; clip: auto; white-space: normal; }
+  </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-b from-emerald-50 via-emerald-50 to-white text-slate-800">
+  <a href="#main" class="sr-only sr-only-focusable bg-white p-2 rounded shadow">Saltar al contenido principal</a>
+
+  <!-- Top bar -->
+  <header class="sticky top-0 z-30 backdrop-blur bg-white/80 border-b border-emerald-100">
+    <div class="mx-auto max-w-7xl px-4 py-3 flex items-center gap-3">
+      <div class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-xl bg-emerald-100 border border-emerald-200 flex items-center justify-center">
+          <span class="text-emerald-700 font-bold">🍏</span>
+        </div>
+        <div>
+          <h1 class="text-lg font-semibold leading-tight">POMONIA</h1>
+          <p class="text-xs text-slate-600 -mt-0.5">Gestión terminográfica · Llagar · Manzana · Léxico geopónico</p>
+        </div>
+      </div>
+
+      <div class="ml-auto flex items-center gap-2">
+        <button id="btnNew"
+          class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 text-sm font-medium shadow-sm"
+          title="Crear lema (Ctrl+N)">
+          <span aria-hidden="true">＋</span> Nuevo lema
+        </button>
+        <button id="btnCorpus"
+          class="inline-flex items-center gap-2 rounded-xl bg-white hover:bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-2 text-sm font-medium shadow-sm"
+          title="Importar/Exportar · Corpus">
+          <span aria-hidden="true">⤓⤒</span> Corpus
+        </button>
+        <button id="btnReset"
+          class="inline-flex items-center gap-2 rounded-xl bg-white hover:bg-rose-50 border border-rose-200 text-rose-700 px-3 py-2 text-sm font-medium shadow-sm"
+          title="Restablecer datos (mantiene copia en descarga)">
+          <span aria-hidden="true">↺</span> Reset
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="mx-auto max-w-7xl px-4 py-4">
+    <!-- Layout: sidebar + list + detail -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <!-- Sidebar -->
+      <aside class="lg:col-span-3">
+        <div class="rounded-2xl bg-white border border-emerald-100 shadow-sm p-4">
+          <h2 class="text-sm font-semibold text-slate-800">Categorías temáticas</h2>
+          <p class="text-xs text-slate-600 mt-1">Filtra por dominio terminológico.</p>
+
+          <div class="mt-3 space-y-2" role="list" aria-label="Categorías">
+            <button class="catBtn w-full text-left px-3 py-2 rounded-xl border border-emerald-100 hover:bg-emerald-50"
+              data-cat="__all__">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium">Todas</span>
+                <span id="countAll" class="text-xs text-slate-600"></span>
+              </div>
+            </button>
+
+            <button class="catBtn w-full text-left px-3 py-2 rounded-xl border border-emerald-100 hover:bg-emerald-50"
+              data-cat="Partes del llagar">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium">Partes del llagar</span>
+                <span class="catCount text-xs text-slate-600" data-count="Partes del llagar"></span>
+              </div>
+            </button>
+
+            <button class="catBtn w-full text-left px-3 py-2 rounded-xl border border-emerald-100 hover:bg-emerald-50"
+              data-cat="Piezas o herramientas">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium">Piezas o herramientas</span>
+                <span class="catCount text-xs text-slate-600" data-count="Piezas o herramientas"></span>
+              </div>
+            </button>
+
+            <button class="catBtn w-full text-left px-3 py-2 rounded-xl border border-emerald-100 hover:bg-emerald-50"
+              data-cat="Léxico geopónico">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium">Léxico geopónico</span>
+                <span class="catCount text-xs text-slate-600" data-count="Léxico geopónico"></span>
+              </div>
+            </button>
+
+            <button class="catBtn w-full text-left px-3 py-2 rounded-xl border border-emerald-100 hover:bg-emerald-50"
+              data-cat="Variedades de manzana">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium">Variedades de manzana</span>
+                <span class="catCount text-xs text-slate-600" data-count="Variedades de manzana"></span>
+              </div>
+            </button>
+
+            <button class="catBtn w-full text-left px-3 py-2 rounded-xl border border-emerald-100 hover:bg-emerald-50"
+              data-cat="Proceso de elaboración">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium">Proceso de elaboración</span>
+                <span class="catCount text-xs text-slate-600" data-count="Proceso de elaboración"></span>
+              </div>
+            </button>
+          </div>
+
+          <hr class="my-4 border-emerald-100" />
+
+          <h3 class="text-sm font-semibold">Búsqueda y filtros</h3>
+
+          <label class="block mt-2 text-xs font-medium text-slate-700" for="q">Búsqueda global</label>
+          <input id="q" type="search" placeholder="Buscar por lema, definición, equivalentes, notas…"
+                 class="mt-1 w-full rounded-xl border border-emerald-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-400" />
+
+          <div class="grid grid-cols-2 gap-2 mt-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-700" for="pos">Cat. gramatical</label>
+              <select id="pos" class="mt-1 w-full rounded-xl border border-emerald-200 bg-white px-3 py-2 text-sm shadow-sm">
+                <option value="__all__">Todas</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-700" for="lang">Idioma (equivalentes)</label>
+              <select id="lang" class="mt-1 w-full rounded-xl border border-emerald-200 bg-white px-3 py-2 text-sm shadow-sm">
+                <option value="__all__">Cualquiera</option>
+                <option value="ast">Asturiano</option>
+                <option value="es">Español</option>
+                <option value="en">Inglés</option>
+                <option value="de">Alemán</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mt-3">
+            <label class="block text-xs font-medium text-slate-700" for="lemmaLang">Idioma (lema)</label>
+            <select id="lemmaLang" class="mt-1 w-full rounded-xl border border-emerald-200 bg-white px-3 py-2 text-sm shadow-sm">
+              <option value="__all__">Cualquiera</option>
+              <option value="ast">Asturiano</option>
+              <option value="es">Español</option>
+              <option value="en">Inglés</option>
+              <option value="de">Alemán</option>
+            </select>
+          </div>
+
+          <div class="mt-3 space-y-2">
+            <label class="flex items-center gap-2 text-sm">
+              <input id="hasImages" type="checkbox" class="rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500" />
+              <span>Solo con imágenes</span>
+            </label>
+            <label class="flex items-center gap-2 text-sm">
+              <input id="hasRefs" type="checkbox" class="rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500" />
+              <span>Solo con referencias</span>
+            </label>
+            <label class="flex items-center gap-2 text-sm">
+              <input id="onlyIncomplete" type="checkbox" class="rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500" />
+              <span>Solo fichas incompletas</span>
+            </label>
+          </div>
+
+          <div class="mt-4 flex items-center justify-between">
+            <button id="btnClearFilters"
+              class="text-sm font-medium text-emerald-800 hover:text-emerald-900 underline underline-offset-4">
+              Limpiar filtros
+            </button>
+            <span id="resultCount" class="text-xs text-slate-600"></span>
+          </div>
+        </div>
+
+        <div class="mt-4 rounded-2xl bg-white border border-emerald-100 shadow-sm p-4">
+          <h3 class="text-sm font-semibold">Control de calidad</h3>
+          <p class="text-xs text-slate-600 mt-1">
+            Una ficha se marca como incompleta si falta: <span class="font-medium">definición</span>,
+            <span class="font-medium">algún equivalente</span>, <span class="font-medium">ejemplos</span> o
+            <span class="font-medium">referencias</span>.
+          </p>
+          <div class="mt-3 flex gap-2 flex-wrap">
+            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2 py-1 text-xs text-emerald-800">
+              ✓ Completa
+            </span>
+            <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2 py-1 text-xs text-amber-800">
+              ⚠ Incompleta
+            </span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- List -->
+      <section class="lg:col-span-4">
+        <div class="rounded-2xl bg-white border border-emerald-100 shadow-sm">
+          <div class="p-4 border-b border-emerald-100 flex items-center justify-between">
+            <div>
+              <h2 class="text-sm font-semibold">Lemas</h2>
+              <p class="text-xs text-slate-600">Selecciona un lema para ver su ficha.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="btnSort"
+                class="rounded-xl bg-white hover:bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm font-medium text-emerald-800"
+                title="Ordenar A↔Z">
+                Orden: <span id="sortLabel" class="font-semibold">A–Z</span>
+              </button>
+            </div>
+          </div>
+
+          <ul id="termList" class="divide-y divide-emerald-50 max-h-[70vh] overflow-auto" aria-label="Lista de lemas"></ul>
+
+          <div class="p-3 text-xs text-slate-600 border-t border-emerald-100">
+            Tip: <span class="font-medium">Ctrl+N</span> crea un lema · <span class="font-medium">Supr</span> elimina el lema seleccionado.
+          </div>
+        </div>
+      </section>
+
+      <!-- Detail -->
+      <section class="lg:col-span-5">
+        <div class="rounded-2xl bg-white border border-emerald-100 shadow-sm">
+          <div class="p-4 border-b border-emerald-100 flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <h2 id="detailTitle" class="text-base font-semibold truncate">Ficha terminológica</h2>
+              <p id="detailSubtitle" class="text-xs text-slate-600 mt-1">Selecciona un lema para ver la información.</p>
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0">
+              <button id="btnEdit"
+                class="rounded-xl bg-white hover:bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm font-medium text-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled>
+                Editar
+              </button>
+              <button id="btnDelete"
+                class="rounded-xl bg-white hover:bg-rose-50 border border-rose-200 px-3 py-2 text-sm font-medium text-rose-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled>
+                Eliminar
+              </button>
+            </div>
+          </div>
+
+          <!-- Tabs (mobile-friendly). Always visible, content changes based on view/edit -->
+          <div class="px-4 pt-3">
+            <div class="flex flex-wrap gap-2" role="tablist" aria-label="Secciones">
+              <button class="tabBtn" data-tab="resumen" role="tab" aria-selected="true">Resumen</button>
+              <button class="tabBtn" data-tab="equivalentes" role="tab" aria-selected="false">Equivalentes</button>
+              <button class="tabBtn" data-tab="variantes" role="tab" aria-selected="false">Variantes & polisemia</button>
+              <button class="tabBtn" data-tab="ejemplos" role="tab" aria-selected="false">Ejemplos & fuentes</button>
+              <button class="tabBtn" data-tab="imagenes" role="tab" aria-selected="false">Imágenes</button>
+              <button class="tabBtn" data-tab="referencias" role="tab" aria-selected="false">Referencias</button>
+            </div>
+          </div>
+
+          <!-- Read view -->
+          <div id="readView" class="p-4">
+            <div id="qcBanner" class="hidden mb-4 rounded-xl border px-3 py-2 text-sm"></div>
+            <div id="readContent" class="text-sm text-slate-700">
+              <div class="rounded-xl bg-emerald-50 border border-emerald-100 p-4">
+                <p class="text-slate-700">
+                  Aquí verás la ficha del lema seleccionado. Puedes editarla con el botón <span class="font-semibold">Editar</span>.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Edit view -->
+          <form id="editView" class="hidden p-4" autocomplete="off">
+            <div class="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+              Estás en <span class="font-semibold">modo edición</span>. Guarda para aplicar cambios.
+            </div>
+
+            <div id="editContent" class="space-y-4"></div>
+
+            <div class="mt-6 flex items-center justify-between gap-2">
+              <button type="button" id="btnCancelEdit"
+                class="rounded-xl bg-white hover:bg-slate-50 border border-slate-200 px-4 py-2 text-sm font-medium">
+                Cancelar
+              </button>
+              <div class="flex items-center gap-2">
+                <button type="button" id="btnDuplicate"
+                  class="rounded-xl bg-white hover:bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-800">
+                  Duplicar
+                </button>
+                <button type="submit" id="btnSave"
+                  class="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 text-sm font-semibold shadow-sm">
+                  Guardar
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="mt-4 rounded-2xl bg-white border border-emerald-100 shadow-sm p-4">
+          <h3 class="text-sm font-semibold">Refinamiento y ampliación</h3>
+          <p class="text-xs text-slate-600 mt-1">
+            Usa <span class="font-medium">Corpus</span> para importar/exportar JSON, ampliar el corpus,
+            y registrar vínculos con lenguas y patrimonio cultural.
+          </p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Modal: New term -->
+  <div id="modalNew" class="hidden fixed inset-0 z-50">
+    <div class="absolute inset-0 bg-slate-900/30" data-close="modalNew"></div>
+    <div class="relative mx-auto max-w-3xl p-4 sm:p-6">
+      <div class="rounded-2xl bg-white border border-emerald-100 shadow-xl overflow-hidden">
+        <div class="p-4 border-b border-emerald-100 flex items-start justify-between gap-3">
+          <div>
+            <h2 class="text-base font-semibold">Nuevo lema</h2>
+            <p class="text-xs text-slate-600 mt-1">Crea una entrada terminológica y guárdala en tu corpus local.</p>
+          </div>
+          <button class="rounded-xl bg-white hover:bg-slate-50 border border-slate-200 px-3 py-2 text-sm"
+                  aria-label="Cerrar" data-close="modalNew">✕</button>
+        </div>
+
+        <form id="newForm" class="p-4 space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-700" for="new_lema">Lema principal *</label>
+              <input id="new_lema" required class="mt-1 w-full rounded-xl border border-emerald-200 px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-700" for="new_pos">Categoría gramatical *</label>
+              <select id="new_pos" required class="mt-1 w-full rounded-xl border border-emerald-200 px-3 py-2 text-sm">
+                <option value="">Seleccionar…</option>
+                <option>Sustantivo</option>
+                <option>Verbo</option>
+                <option>Adjetivo</option>
+                <option>Adverbio</option>
+                <option>Locución</option>
+                <option>Otro</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-700" for="new_lema_lang">Idioma del lema (entrada) *</label>
+            <select id="new_lema_lang" required class="mt-1 w-full rounded-xl border border-emerald-200 px-3 py-2 text-sm">
+              <option value="ast" selected>Asturiano</option>
+              <option value="es">Español</option>
+              <option value="en">Inglés</option>
+              <option value="de">Alemán</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-700" for="new_dominios">Dominios (separa por coma) *</label>
+            <input id="new_dominios" required placeholder="Ej.: Proceso de elaboración, Partes del llagar"
+                   class="mt-1 w-full rounded-xl border border-emerald-200 px-3 py-2 text-sm" />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-700" for="new_def">Definición técnica *</label>
+              <textarea id="new_def" required rows="3" class="mt-1 w-full rounded-xl border border-emerald-200 px-3 py-2 text-sm"></textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-700" for="new_etim">Etimología</label>
+              <textarea id="new_etim" rows="3" class="mt-1 w-full rounded-xl border border-emerald-200 px-3 py-2 text-sm"></textarea>
+            </div>
+          </div>
+
+          <div class="rounded-xl border border-emerald-100 bg-emerald-50 p-3">
+            <p class="text-xs text-slate-700">
+              Consejo: puedes completar equivalentes, variantes, polisemia, ejemplos, imágenes y referencias una vez creado el lema.
+            </p>
+          </div>
+
+          <div class="flex items-center justify-end gap-2">
+            <button type="button" data-close="modalNew"
+                    class="rounded-xl bg-white hover:bg-slate-50 border border-slate-200 px-4 py-2 text-sm font-medium">
+              Cancelar
+            </button>
+            <button type="submit"
+                    class="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 text-sm font-semibold shadow-sm">
+              Crear
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Corpus -->
+  <div id="modalCorpus" class="hidden fixed inset-0 z-50">
+    <div class="absolute inset-0 bg-slate-900/30" data-close="modalCorpus"></div>
+    <div class="relative mx-auto max-w-4xl p-4 sm:p-6">
+      <div class="rounded-2xl bg-white border border-emerald-100 shadow-xl overflow-hidden">
+        <div class="p-4 border-b border-emerald-100 flex items-start justify-between gap-3">
+          <div>
+            <h2 class="text-base font-semibold">Corpus · Importación / Exportación</h2>
+            <p class="text-xs text-slate-600 mt-1">Amplía el corpus, respalda tu trabajo y registra vínculos culturales.</p>
+          </div>
+          <button class="rounded-xl bg-white hover:bg-slate-50 border border-slate-200 px-3 py-2 text-sm"
+                  aria-label="Cerrar" data-close="modalCorpus">✕</button>
+        </div>
+
+        <div class="p-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <section class="rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
+            <h3 class="text-sm font-semibold">Exportar</h3>
+            <p class="text-xs text-slate-600 mt-1">Descarga tu base de datos en JSON.</p>
+            <button id="btnExport"
+              class="mt-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 text-sm font-semibold shadow-sm">
+              Descargar JSON
+            </button>
+
+            <hr class="my-4 border-emerald-100" />
+
+            <h3 class="text-sm font-semibold">Notas de patrimonio y lazos lingüísticos</h3>
+            <p class="text-xs text-slate-600 mt-1">
+              Un campo libre para registrar vínculos con otras lenguas, usos tradicionales o variación diacrónica.
+            </p>
+            <textarea id="corpusNotes" rows="6" class="mt-2 w-full rounded-xl border border-emerald-200 px-3 py-2 text-sm"
+              placeholder="Ej.: Conexiones con léxico gallego-portugués; uso tradicional en X; variantes diacrónicas…"></textarea>
+            <button id="btnSaveNotes"
+              class="mt-2 rounded-xl bg-white hover:bg-emerald-100 border border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-800">
+              Guardar notas
+            </button>
+          </section>
+
+          <section class="rounded-2xl border border-emerald-100 bg-white p-4">
+            <h3 class="text-sm font-semibold">Importar</h3>
+            <p class="text-xs text-slate-600 mt-1">
+              Importa un JSON para ampliar el corpus. Puedes <span class="font-medium">reemplazar</span> o <span class="font-medium">fusionar</span>.
+            </p>
+
+            <div class="mt-3 flex flex-wrap gap-2">
+              <label class="inline-flex items-center gap-2 text-sm">
+                <input type="radio" name="importMode" value="replace" checked class="text-emerald-600" />
+                Reemplazar
+              </label>
+              <label class="inline-flex items-center gap-2 text-sm">
+                <input type="radio" name="importMode" value="merge" class="text-emerald-600" />
+                Fusionar (por id)
+              </label>
+            </div>
+
+            <div class="mt-3">
+              <label class="block text-xs font-medium text-slate-700">Importar desde archivo</label>
+              <input id="importFile" type="file" accept="application/json"
+                     class="mt-1 block w-full text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-emerald-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-emerald-700" />
+            </div>
+
+            <div class="mt-3">
+              <label class="block text-xs font-medium text-slate-700">O pegar JSON</label>
+              <textarea id="importText" rows="10" class="mt-1 w-full rounded-xl border border-emerald-200 px-3 py-2 text-sm"
+                placeholder='{"version":"1.0","terms":[...]} o simplemente [...]'></textarea>
+            </div>
+
+            <div class="mt-3 flex items-center gap-2">
+              <button id="btnImport"
+                class="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 text-sm font-semibold shadow-sm">
+                Importar
+              </button>
+              <button id="btnValidate"
+                class="rounded-xl bg-white hover:bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-2 text-sm font-medium">
+                Validar JSON
+              </button>
+            </div>
+
+            <div id="importStatus" class="mt-3 hidden rounded-xl border px-3 py-2 text-sm"></div>
+          </section>
+        </div>
+
+        <div class="p-4 border-t border-emerald-100 flex items-center justify-end">
+          <button data-close="modalCorpus" class="rounded-xl bg-white hover:bg-slate-50 border border-slate-200 px-4 py-2 text-sm font-medium">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="pointer-events-none fixed bottom-4 left-1/2 -translate-x-1/2 z-50 hidden">
+    <div class="pointer-events-auto rounded-xl bg-slate-900 text-white px-4 py-2 text-sm shadow-lg"></div>
+  </div>
+
+  <script>
+    /***********************
+     * POMONIA — Data model
+     ***********************/
+    const STORAGE_KEY = "pomonIa_db_v1";
+    const NOTES_KEY   = "pomonIa_corpus_notes_v1";
+
+    const DOMAINS = [
+      "Partes del llagar",
+      "Piezas o herramientas",
+      "Léxico geopónico",
+      "Variedades de manzana",
+      "Proceso de elaboración",
+    ];
+
+    const POS_DEFAULTS = ["Sustantivo","Verbo","Adjetivo","Adverbio","Locución","Otro"];
+
+    // Idiomas (lema y equivalentes)
+    const LANGS = [
+      { code: "ast", label: "Asturiano" },
+      { code: "es",  label: "Español" },
+      { code: "en",  label: "Inglés" },
+      { code: "de",  label: "Alemán" },
+    ];
+    const langLabel = (code) => (LANGS.find(l => l.code === code)?.label || code || "—");
+
+    function uid() {
+      return "t_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+    }
+
+    function blankTerm() {
+      return {
+        id: uid(),
+        lema_principal: "",
+        lema_idioma: "ast", // idioma del lema (entrada)
+        categoria_gramatical: "Sustantivo",
+        dominios: [],
+        equivalentes: { ast: [], es: [], en: [], de: [] },
+        definicion_tecnica: "",
+        etimologia: "",
+        explicacion: "",
+        variantes: [], // {tipo, forma, nota}
+        polisemia: [], // {acepcion, definicion, dominios:[], ejemplos:[{texto, fuente, nota}]}
+        ejemplos: [],  // {texto, fuente, nota}
+        imagenes: [],  // {tipo:"url"|"base64", src, nota}
+        referencias_bibliograficas: [], // {autor, anio, titulo, fuente, doi, url}
+        tags: []
+      };
+    }
+
+    function sampleData() {
+      // Nota: contenido plausible de demostración; ajusta según tu corpus real.
+      const t = (overrides) => Object.assign(blankTerm(), overrides);
+
+      return {
+        version: "1.0",
+        terms: [
+          t({
+            id: "t_culex",
+            lema_principal: "culex",
+            categoria_gramatical: "Sustantivo",
+            dominios: ["Piezas o herramientas"],
+            equivalentes: { ast: ["culex"], es: ["cuña"], en: ["wedge"], de: ["Keil"] },
+            definicion_tecnica: "Pieza en forma de cuña utilizada para calzar o fijar componentes de una estructura o herramienta en el entorno del llagar.",
+            etimologia: "Del lat. *cuneus* ‘cuña’; adaptación popular en el ámbito rural.",
+            explicacion: "Se emplea para estabilizar elementos móviles (p. ej., travesaños o apoyos) durante operaciones de prensado o ajuste.",
+            variantes: [
+              { tipo: "ortográfica", forma: "culez", nota: "Variación minoritaria en documentación local." }
+            ],
+            polisemia: [],
+            ejemplos: [
+              { texto: "Coloca’l culex pa que nun bambé la pieza cuando apretes.", fuente: "Informante (oral)", nota: "Llagar tradicional" }
+            ],
+            imagenes: [
+              { tipo: "url", src: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Wedge_%28PSF%29.png/320px-Wedge_%28PSF%29.png", nota: "Imagen genérica de cuña." }
+            ],
+            referencias_bibliograficas: [
+              { autor: "García Arias", anio: "2002", titulo: "Diccionariu de la Llingua Asturiana", fuente: "ALLA", doi: "", url: "" }
+            ],
+            tags: ["patrimonio", "herramientas"]
+          }),
+
+          t({
+            id: "t_mayar",
+            lema_principal: "mayar",
+            categoria_gramatical: "Verbo",
+            dominios: ["Proceso de elaboración"],
+            equivalentes: { ast: ["mayar"], es: ["moler", "majar"], en: ["crush (apples)"], de: ["zermahlen"] },
+            definicion_tecnica: "Triturar la manzana para obtener una masa apta para el prensado y posterior extracción del mosto.",
+            etimologia: "Vinculado a ‘majar’ (romance), con especialización semántica en el proceso sidrero.",
+            explicacion: "En el proceso tradicional, el grado de trituración influye en el rendimiento del prensado y en la extracción de compuestos aromáticos.",
+            variantes: [
+              { tipo: "diatópica", forma: "majar", nota: "Uso más general, menos técnico." }
+            ],
+            polisemia: [
+              {
+                acepcion: "1",
+                definicion: "Triturar específicamente manzana destinada a sidra.",
+                dominios: ["Proceso de elaboración"],
+                ejemplos: [{ texto: "Hai que mayar bien pa sacar más mostu.", fuente: "Corpus técnico", nota: "" }]
+              },
+              {
+                acepcion: "2",
+                definicion: "Golpear o triturar (uso general, no especializado).",
+                dominios: ["Léxico geopónico"],
+                ejemplos: [{ texto: "Mayó l’allu nel morteru.", fuente: "Uso general", nota: "No sidrero" }]
+              }
+            ],
+            ejemplos: [
+              { texto: "Mayamos la manzana antes de pasala a la prensa.", fuente: "Manual de elaboración", nota: "" }
+            ],
+            imagenes: [],
+            referencias_bibliograficas: [
+              { autor: "Díaz", anio: "2017", titulo: "Tecnoloxía tradicional del llagar", fuente: "Monografía local", doi: "", url: "" }
+            ],
+            tags: ["proceso", "técnica"]
+          }),
+
+          t({
+            id: "t_tina",
+            lema_principal: "tina",
+            categoria_gramatical: "Sustantivo",
+            dominios: ["Partes del llagar"],
+            equivalentes: { ast: ["tina"], es: ["cuba"], en: ["vat"], de: ["Bottich"] },
+            definicion_tecnica: "Recipiente de gran capacidad empleado para contener mosto o sidra durante etapas de fermentación o reposo.",
+            etimologia: "Del lat. *tina*; continuidad romance.",
+            explicacion: "En contextos tradicionales puede variar el material (madera) y su denominación según capacidad y uso.",
+            variantes: [
+              { tipo: "de registro", forma: "cuba", nota: "Preferencia en registro más general." }
+            ],
+            polisemia: [],
+            ejemplos: [
+              { texto: "Metimos el mostu na tina pa que entame a fermentar.", fuente: "Informante (oral)", nota: "Zona central" }
+            ],
+            imagenes: [
+              { tipo: "url", src: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Fermentation_vat.JPG/320px-Fermentation_vat.JPG", nota: "Ejemplo de cuba/depósito." }
+            ],
+            referencias_bibliograficas: [
+              { autor: "Fernández", anio: "2010", titulo: "Léxico del llagar asturianu", fuente: "Revista local", doi: "", url: "" }
+            ],
+            tags: ["fermentación"]
+          }),
+
+          t({
+            id: "t_pumarada",
+            lema_principal: "pumarada",
+            categoria_gramatical: "Sustantivo",
+            dominios: ["Léxico geopónico"],
+            equivalentes: { ast: ["pumarada"], es: ["pomarada"], en: ["apple orchard"], de: ["Apfelplantage"] },
+            definicion_tecnica: "Plantación de manzanos destinada a la producción de manzana, especialmente para sidra.",
+            etimologia: "Derivado de ‘pumar’ (manzano) + sufijo -ada.",
+            explicacion: "Unidad de paisaje agrario con implicaciones culturales; puede asociarse a prácticas de manejo específicas.",
+            variantes: [{ tipo: "ortográfica", forma: "pomarada", nota: "Grafía castellanizada." }],
+            polisemia: [],
+            ejemplos: [
+              { texto: "La pumarada ta nuna llomba con bona escorrentía.", fuente: "Notas de campo", nota: "Manejo del terreno" }
+            ],
+            imagenes: [],
+            referencias_bibliograficas: [
+              { autor: "ALLA", anio: "2000", titulo: "Vocabulariu basicu", fuente: "Academia de la Llingua Asturiana", doi: "", url: "" }
+            ],
+            tags: ["paisaje", "agronomía"]
+          }),
+
+          t({
+            id: "t_rabosa",
+            lema_principal: "rabosa",
+            categoria_gramatical: "Sustantivo",
+            dominios: ["Variedades de manzana"],
+            equivalentes: { ast: ["rabosa"], es: ["(var.) rabosa"], en: ["(apple variety)"], de: ["(Apfelsorte)"] },
+            definicion_tecnica: "Variedad tradicional de manzana empleada en mezclas para sidra, apreciada por su aporte de acidez y perfil aromático (según zonificación local).",
+            etimologia: "Motivación popular; posible asociación metafórica con rasgos de coloración o forma.",
+            explicacion: "La identificación varietal puede variar por comarca; conviene documentar sinónimos locales y rasgos pomológicos.",
+            variantes: [
+              { tipo: "diatópica", forma: "rabosu", nota: "Registro local; forma variable." }
+            ],
+            polisemia: [],
+            ejemplos: [
+              { texto: "La rabosa da un toque más vivo a la mezcla.", fuente: "Entrevista a productor", nota: "Mezcla sidrera" }
+            ],
+            imagenes: [],
+            referencias_bibliograficas: [
+              { autor: "Consejería", anio: "2019", titulo: "Catálogo de variedades locales", fuente: "Informe técnico", doi: "", url: "" }
+            ],
+            tags: ["variedad", "tradicional"]
+          }),
+
+          t({
+            id: "t_prensa",
+            lema_principal: "prensa",
+            categoria_gramatical: "Sustantivo",
+            dominios: ["Partes del llagar","Proceso de elaboración"],
+            equivalentes: { ast: ["prensa"], es: ["prensa"], en: ["press"], de: ["Presse"] },
+            definicion_tecnica: "Máquina o conjunto mecánico destinado a extraer el mosto mediante presión aplicada a la masa de manzana.",
+            etimologia: "Del lat. *pressare* (vía romance).",
+            explicacion: "Puede ser de distintos tipos (tornillo, hidráulica); su denominación se combina con especificadores.",
+            variantes: [
+              { tipo: "de registro", forma: "prensa hidráulica", nota: "Especificación técnica." }
+            ],
+            polisemia: [],
+            ejemplos: [
+              { texto: "La prensa de tornu ye más lenta pero mui robusta.", fuente: "Guía de museo", nota: "" }
+            ],
+            imagenes: [
+              { tipo: "url", src: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Cider_press.jpg/320px-Cider_press.jpg", nota: "Prensa de sidra (imagen ilustrativa)." }
+            ],
+            referencias_bibliograficas: [
+              { autor: "Museo de la Sidra", anio: "2015", titulo: "Paneles didácticos del proceso", fuente: "Material divulgativo", doi: "", url: "" }
+            ],
+            tags: ["mecánica", "patrimonio"]
+          }),
+        ]
+      };
+    }
+
+    function loadDB() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      try {
+        const db = JSON.parse(raw);
+        if (!db || !Array.isArray(db.terms)) return null;
+        return normalizeDB(db);
+      } catch { return null; }
+    }
+
+    function normalizeDB(db) {
+      const out = { version: db.version || "1.0", terms: [] };
+      for (const term of db.terms) {
+        const b = blankTerm();
+        const merged = Object.assign(b, term);
+        // Ensure nested defaults exist
+        merged.equivalentes = Object.assign({ ast:[], es:[], en:[], de:[] }, term.equivalentes || {});
+        merged.dominios = Array.isArray(merged.dominios) ? merged.dominios : [];
+        merged.variantes = Array.isArray(merged.variantes) ? merged.variantes : [];
+        merged.polisemia = Array.isArray(merged.polisemia) ? merged.polisemia : [];
+        merged.ejemplos = Array.isArray(merged.ejemplos) ? merged.ejemplos : [];
+        merged.imagenes = Array.isArray(merged.imagenes) ? merged.imagenes : [];
+        merged.referencias_bibliograficas = Array.isArray(merged.referencias_bibliograficas) ? merged.referencias_bibliograficas : [];
+        merged.tags = Array.isArray(merged.tags) ? merged.tags : [];
+        out.terms.push(merged);
+      }
+      return out;
+    }
+
+    function saveDB() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(DB));
+      updateCounts();
+    }
+
+    function loadNotes() {
+      return localStorage.getItem(NOTES_KEY) || "";
+    }
+    function saveNotes(val) {
+      localStorage.setItem(NOTES_KEY, val || "");
+    }
+
+    let DB = loadDB() || sampleData();
+    // Persist sample on first run
+    if (!localStorage.getItem(STORAGE_KEY)) saveDB();
+
+    /***********************
+     * State & helpers
+     ***********************/
+    let selectedId = null;
+    let activeCat = "__all__";
+    let sortAZ = true;
+    let activeTab = "resumen";
+    let isEditing = false;
+
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+    function toast(msg) {
+      const t = $("#toast");
+      const box = t.firstElementChild;
+      box.textContent = msg;
+      t.classList.remove("hidden");
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => t.classList.add("hidden"), 2300);
+    }
+
+    function escapeHTML(s) {
+      return (s ?? "").toString()
+        .replaceAll("&","&amp;").replaceAll("<","&lt;")
+        .replaceAll(">","&gt;").replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function asArrayFromCommaList(s) {
+      return (s || "")
+        .split(",")
+        .map(x => x.trim())
+        .filter(Boolean);
+    }
+
+    function quality(term) {
+      const hasDef = !!(term.definicion_tecnica || "").trim();
+      const hasEq = ["ast","es","en","de"].some(k => (term.equivalentes?.[k] || []).filter(Boolean).length > 0);
+      const hasEx = (term.ejemplos || []).length > 0 || (term.polisemia || []).some(p => (p.ejemplos || []).length > 0);
+      const hasRefs = (term.referencias_bibliograficas || []).length > 0;
+      const missing = [];
+      if (!hasDef) missing.push("definición");
+      if (!hasEq)  missing.push("equivalentes");
+      if (!hasEx)  missing.push("ejemplos");
+      if (!hasRefs)missing.push("referencias");
+      return { complete: missing.length === 0, missing };
+    }
+
+    function fullText(term) {
+      const parts = [
+        term.lema_principal,
+        term.categoria_gramatical,
+        (term.dominios || []).join(" "),
+        term.definicion_tecnica,
+        term.etimologia,
+        term.explicacion,
+        (term.tags || []).join(" "),
+        JSON.stringify(term.equivalentes || {}),
+        JSON.stringify(term.variantes || []),
+        JSON.stringify(term.polisemia || []),
+        JSON.stringify(term.ejemplos || []),
+        JSON.stringify(term.referencias_bibliograficas || []),
+      ];
+      return parts.join(" ").toLowerCase();
+    }
+
+    function currentFilters() {
+      return {
+        q: ($("#q").value || "").trim().toLowerCase(),
+        pos: $("#pos").value,
+        lang: $("#lang").value,
+        lemmaLang: $("#lemmaLang").value,
+        hasImages: $("#hasImages").checked,
+        hasRefs: $("#hasRefs").checked,
+        onlyIncomplete: $("#onlyIncomplete").checked
+      };
+    }
+
+    function matchesFilters(term) {
+      const f = currentFilters();
+
+      if (activeCat !== "__all__") {
+        if (!(term.dominios || []).includes(activeCat)) return false;
+      }
+      if (f.pos !== "__all__" && term.categoria_gramatical !== f.pos) return false;
+
+      // Filtra por idioma del lema (idioma de entrada)
+      if (f.lemmaLang !== "__all__") {
+        if ((term.lema_idioma || "ast") !== f.lemmaLang) return false;
+      }
+
+      if (f.lang !== "__all__") {
+        const arr = (term.equivalentes?.[f.lang] || []).filter(Boolean);
+        if (arr.length === 0) return false;
+      }
+
+      if (f.hasImages) {
+        if (!Array.isArray(term.imagenes) || term.imagenes.length === 0) return false;
+      }
+      if (f.hasRefs) {
+        if (!Array.isArray(term.referencias_bibliograficas) || term.referencias_bibliograficas.length === 0) return false;
+      }
+      if (f.onlyIncomplete) {
+        if (quality(term).complete) return false;
+      }
+
+      if (f.q) {
+        if (!fullText(term).includes(f.q)) return false;
+      }
+      return true;
+    }
+
+    function filteredTerms() {
+      const arr = DB.terms.filter(matchesFilters);
+      arr.sort((a,b) => {
+        const A = (a.lema_principal || "").toLowerCase();
+        const B = (b.lema_principal || "").toLowerCase();
+        return sortAZ ? A.localeCompare(B, "es") : B.localeCompare(A, "es");
+      });
+      return arr;
+    }
+
+    function getSelected() {
+      return DB.terms.find(t => t.id === selectedId) || null;
+    }
+
+    function setTab(tab) {
+      activeTab = tab;
+      $$(".tabBtn").forEach(btn => {
+        const on = btn.dataset.tab === tab;
+        btn.className = "tabBtn inline-flex items-center rounded-full px-3 py-1.5 text-sm font-medium border " + (on
+          ? "bg-emerald-600 text-white border-emerald-600"
+          : "bg-white text-emerald-800 border-emerald-200 hover:bg-emerald-50");
+        btn.setAttribute("aria-selected", on ? "true" : "false");
+      });
+
+      // Rerender detail to show current tab section
+      renderDetail();
+    }
+
+    // Initialize tab styles
+    setTab("resumen");
+
+    /***********************
+     * Rendering: counts, list, detail
+     ***********************/
+    function updateCounts() {
+      $("#countAll").textContent = `${DB.terms.length}`;
+      for (const d of DOMAINS) {
+        const n = DB.terms.filter(t => (t.dominios || []).includes(d)).length;
+        const el = $(`.catCount[data-count="${CSS.escape(d)}"]`);
+        if (el) el.textContent = String(n);
+      }
+    }
+
+    function populatePOS() {
+      const select = $("#pos");
+      const existing = new Set(POS_DEFAULTS);
+      DB.terms.forEach(t => existing.add(t.categoria_gramatical));
+      const vals = ["__all__", ...Array.from(existing).filter(Boolean).sort((a,b)=>a.localeCompare(b,"es"))];
+      select.innerHTML = "";
+      for (const v of vals) {
+        const opt = document.createElement("option");
+        opt.value = v;
+        opt.textContent = v === "__all__" ? "Todas" : v;
+        select.appendChild(opt);
+      }
+    }
+
+    function renderList() {
+      const list = $("#termList");
+      const items = filteredTerms();
+      $("#resultCount").textContent = `${items.length} resultado(s)`;
+
+      list.innerHTML = "";
+      if (items.length === 0) {
+        const li = document.createElement("li");
+        li.className = "p-4 text-sm text-slate-600";
+        li.textContent = "No hay resultados con los filtros actuales.";
+        list.appendChild(li);
+        return;
+      }
+
+      for (const term of items) {
+        const q = quality(term);
+        const li = document.createElement("li");
+        li.className = "p-3 hover:bg-emerald-50 focus-within:bg-emerald-50";
+        const isSel = term.id === selectedId;
+
+        li.innerHTML = `
+          <button class="w-full text-left rounded-xl px-3 py-2 border ${isSel ? "border-emerald-400 bg-emerald-50" : "border-emerald-100 bg-white"}"
+                  data-id="${escapeHTML(term.id)}">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold text-slate-900 truncate">${escapeHTML(term.lema_principal || "(sin lema)")}</span>
+                  <span class="inline-flex items-center rounded-full bg-slate-50 border border-slate-200 px-2 py-0.5 text-[11px] text-slate-700" title="Idioma del lema">
+                    ${escapeHTML(langLabel(term.lema_idioma || "ast"))}
+                  </span>
+                  <span class="text-xs text-slate-600">${escapeHTML(term.categoria_gramatical || "")}</span>
+                </div>
+                <div class="mt-1 flex flex-wrap gap-1">
+                  ${(term.dominios || []).slice(0,3).map(d => `
+                    <span class="inline-flex items-center rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[11px] text-emerald-800">
+                      ${escapeHTML(d)}
+                    </span>
+                  `).join("")}
+                  ${(term.dominios || []).length > 3 ? `
+                    <span class="inline-flex items-center rounded-full bg-slate-50 border border-slate-200 px-2 py-0.5 text-[11px] text-slate-700">
+                      +${(term.dominios || []).length - 3}
+                    </span>
+                  ` : ""}
+                </div>
+              </div>
+              <div class="shrink-0 flex flex-col items-end gap-1">
+                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] border ${q.complete ? "bg-emerald-50 border-emerald-200 text-emerald-800" : "bg-amber-50 border-amber-200 text-amber-800"}">
+                  ${q.complete ? "✓ Completa" : "⚠ Incompleta"}
+                </span>
+                <span class="text-[11px] text-slate-600">
+                  ${(term.imagenes || []).length ? "🖼 " : ""}${(term.referencias_bibliograficas || []).length ? "📚" : ""}
+                </span>
+              </div>
+            </div>
+          </button>
+        `;
+        list.appendChild(li);
+      }
+    }
+
+    function renderDetail() {
+      const term = getSelected();
+      const btnEdit = $("#btnEdit");
+      const btnDelete = $("#btnDelete");
+
+      btnEdit.disabled = !term;
+      btnDelete.disabled = !term;
+
+      if (!term) {
+        $("#detailTitle").textContent = "Ficha terminológica";
+        $("#detailSubtitle").textContent = "Selecciona un lema para ver la información.";
+        $("#qcBanner").classList.add("hidden");
+        if (isEditing) toggleEdit(false);
+        $("#readContent").innerHTML = `
+          <div class="rounded-xl bg-emerald-50 border border-emerald-100 p-4">
+            <p class="text-slate-700">Aquí verás la ficha del lema seleccionado.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const q = quality(term);
+      $("#detailTitle").textContent = term.lema_principal || "(sin lema)";
+      $("#detailSubtitle").textContent = `${langLabel(term.lema_idioma || "ast")} · ${term.categoria_gramatical || ""} · ${((term.dominios||[]).join(" · ")) || "Sin dominios"}`;
+
+      const banner = $("#qcBanner");
+      if (q.complete) {
+        banner.className = "mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900";
+        banner.textContent = "✓ Ficha completa (definición, equivalentes, ejemplos y referencias presentes).";
+        banner.classList.remove("hidden");
+      } else {
+        banner.className = "mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900";
+        banner.textContent = `⚠ Ficha incompleta: falta(n) ${q.missing.join(", ")}.`;
+        banner.classList.remove("hidden");
+      }
+
+      // Render by tab (read mode)
+      if (!isEditing) {
+        $("#readContent").innerHTML = renderReadTab(term, activeTab);
+      } else {
+        $("#editContent").innerHTML = renderEditTab(term, activeTab);
+        // keep hidden fields in sync (if needed)
+      }
+    }
+
+    function pill(text, tone="emerald") {
+      const map = {
+        emerald: "bg-emerald-50 border-emerald-200 text-emerald-800",
+        slate: "bg-slate-50 border-slate-200 text-slate-700",
+        amber: "bg-amber-50 border-amber-200 text-amber-800",
+      };
+      return `<span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] ${map[tone]||map.slate}">${escapeHTML(text)}</span>`;
+    }
+
+    function renderEqBlock(term) {
+      const rows = [
+        ["Asturiano", "ast"],
+        ["Español", "es"],
+        ["Inglés", "en"],
+        ["Alemán", "de"],
+      ];
+      return `
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          ${rows.map(([label,key]) => {
+            const arr = (term.equivalentes?.[key] || []).filter(Boolean);
+            return `
+              <div class="rounded-xl border border-emerald-100 bg-white p-3">
+                <div class="flex items-center justify-between">
+                  <p class="text-xs font-semibold text-slate-700">${label}</p>
+                  <span class="text-[11px] text-slate-500">${arr.length} eq.</span>
+                </div>
+                <div class="mt-2 flex flex-wrap gap-1">
+                  ${arr.length ? arr.map(x => pill(x,"emerald")).join("") : `<span class="text-sm text-slate-500">—</span>`}
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
+    }
+
+    function renderRefs(term) {
+      const refs = term.referencias_bibliograficas || [];
+      if (!refs.length) return `<p class="text-sm text-slate-600">Sin referencias.</p>`;
+      return `
+        <ol class="space-y-2">
+          ${refs.map((r, idx) => {
+            const author = r.autor || "Autor";
+            const year = r.anio || "s.f.";
+            const title = r.titulo || "";
+            const source = r.fuente || "";
+            const doi = (r.doi || "").trim();
+            const url = (r.url || "").trim();
+            const authorYear = `${author} (${year})`;
+            const link = url ? `<a class="text-emerald-700 underline underline-offset-4" href="${escapeHTML(url)}" target="_blank" rel="noopener">enlace</a>` : "";
+            const doiTxt = doi ? ` DOI: ${escapeHTML(doi)}` : "";
+            return `
+              <li class="rounded-xl border border-emerald-100 bg-white p-3">
+                <div class="flex items-start justify-between gap-2">
+                  <div>
+                    <p class="text-sm font-semibold text-slate-900">${escapeHTML(authorYear)}</p>
+                    <p class="text-sm text-slate-700 mt-1">${escapeHTML(title)}</p>
+                    <p class="text-xs text-slate-600 mt-1">${escapeHTML(source)}${doiTxt}</p>
+                  </div>
+                  <div class="shrink-0 text-xs">${link}</div>
+                </div>
+              </li>
+            `;
+          }).join("")}
+        </ol>
+      `;
+    }
+
+    function renderExamples(term) {
+      const ex = term.ejemplos || [];
+      const fromPoly = (term.polisemia || []).flatMap(p => (p.ejemplos || []).map(e => ({...e, _acep: p.acepcion})));
+      const all = [
+        ...ex.map(e => ({...e, _scope:"general"})),
+        ...fromPoly.map(e => ({...e, _scope:"acepcion"}))
+      ];
+      if (!all.length) return `<p class="text-sm text-slate-600">Sin ejemplos.</p>`;
+
+      return `
+        <div class="space-y-2">
+          ${all.map(e => `
+            <div class="rounded-xl border border-emerald-100 bg-white p-3">
+              <p class="text-sm text-slate-900">“${escapeHTML(e.texto || "")}”</p>
+              <div class="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-600">
+                ${pill(e.fuente || "Fuente no indicada", "slate")}
+                ${e._scope === "acepcion" ? pill(`Acepción ${e._acep}`, "emerald") : pill("Ejemplo general", "emerald")}
+                ${e.nota ? pill(e.nota, "slate") : ""}
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderImages(term) {
+      const imgs = term.imagenes || [];
+      if (!imgs.length) return `<p class="text-sm text-slate-600">Sin imágenes.</p>`;
+
+      return `
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          ${imgs.map((im, idx) => `
+            <figure class="rounded-xl border border-emerald-100 bg-white overflow-hidden">
+              <img src="${escapeHTML(im.src)}" alt="${escapeHTML(im.nota || ("Imagen de " + (term.lema_principal||"lema")))}"
+                   class="w-full h-40 object-cover bg-emerald-50" />
+              <figcaption class="p-3 text-xs text-slate-600">
+                ${escapeHTML(im.nota || "—")}
+              </figcaption>
+            </figure>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderVarPoly(term) {
+      const vars = term.variantes || [];
+      const poly = term.polisemia || [];
+
+      return `
+        <div class="space-y-4">
+          <div>
+            <h4 class="text-sm font-semibold text-slate-900">Variantes</h4>
+            <div class="mt-2 space-y-2">
+              ${vars.length ? vars.map(v => `
+                <div class="rounded-xl border border-emerald-100 bg-white p-3">
+                  <div class="flex flex-wrap items-center gap-2">
+                    ${pill(v.tipo || "tipo", "emerald")}
+                    <span class="text-sm font-semibold">${escapeHTML(v.forma || "")}</span>
+                  </div>
+                  ${v.nota ? `<p class="text-sm text-slate-700 mt-2">${escapeHTML(v.nota)}</p>` : `<p class="text-sm text-slate-500 mt-2">—</p>`}
+                </div>
+              `).join("") : `<p class="text-sm text-slate-600">Sin variantes.</p>`}
+            </div>
+          </div>
+
+          <div>
+            <h4 class="text-sm font-semibold text-slate-900">Polisemia (acepciones)</h4>
+            <div class="mt-2 space-y-2">
+              ${poly.length ? poly.map(p => `
+                <div class="rounded-xl border border-emerald-100 bg-white p-3">
+                  <div class="flex items-start justify-between gap-2">
+                    <div class="min-w-0">
+                      <p class="text-sm font-semibold text-slate-900">Acepción ${escapeHTML(p.acepcion || "")}</p>
+                      <p class="text-sm text-slate-700 mt-1">${escapeHTML(p.definicion || "")}</p>
+                      <div class="mt-2 flex flex-wrap gap-1">
+                        ${(p.dominios||[]).map(d => pill(d,"emerald")).join("") || `<span class="text-xs text-slate-500">—</span>`}
+                      </div>
+                    </div>
+                    <div class="shrink-0">
+                      ${pill(`${(p.ejemplos||[]).length} ejemplo(s)`, "slate")}
+                    </div>
+                  </div>
+                </div>
+              `).join("") : `<p class="text-sm text-slate-600">Sin acepciones registradas.</p>`}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderReadTab(term, tab) {
+      const head = `
+        <div class="rounded-2xl border border-emerald-100 bg-white p-4 mb-4">
+          <div class="flex flex-wrap items-center gap-2">
+            ${pill(term.categoria_gramatical || "—", "slate")}
+            ${(term.dominios||[]).map(d => pill(d, "emerald")).join("")}
+            ${(term.tags||[]).slice(0,6).map(t => pill(t, "slate")).join("")}
+          </div>
+          <div class="mt-3 grid grid-cols-1 gap-2">
+            <div class="rounded-xl bg-emerald-50 border border-emerald-100 p-3">
+              <p class="text-xs font-semibold text-slate-700">Definición técnica</p>
+              <p class="text-sm text-slate-900 mt-1">${escapeHTML(term.definicion_tecnica || "—")}</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div class="rounded-xl bg-white border border-emerald-100 p-3">
+                <p class="text-xs font-semibold text-slate-700">Etimología</p>
+                <p class="text-sm text-slate-900 mt-1">${escapeHTML(term.etimologia || "—")}</p>
+              </div>
+              <div class="rounded-xl bg-white border border-emerald-100 p-3">
+                <p class="text-xs font-semibold text-slate-700">Explicación</p>
+                <p class="text-sm text-slate-900 mt-1">${escapeHTML(term.explicacion || "—")}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const body = (() => {
+        switch (tab) {
+          case "resumen":
+            return head;
+          case "equivalentes":
+            return `${renderEqBlock(term)}`;
+          case "variantes":
+            return renderVarPoly(term);
+          case "ejemplos":
+            return renderExamples(term);
+          case "imagenes":
+            return renderImages(term);
+          case "referencias":
+            return renderRefs(term);
+          default:
+            return head;
+        }
+      })();
+
+      return body;
+    }
+
+    /***********************
+     * Edit rendering + form handling
+     ***********************/
+    function inputRow(label, id, value, opts={}) {
+      const { type="text", placeholder="", help="", required=false } = opts;
+      return `
+        <div>
+          <label class="block text-xs font-medium text-slate-700" for="${id}">${escapeHTML(label)}${required ? " *" : ""}</label>
+          <input id="${id}" ${required ? "required" : ""} type="${type}" value="${escapeHTML(value || "")}" placeholder="${escapeHTML(placeholder)}"
+            class="mt-1 w-full rounded-xl border border-emerald-200 bg-white px-3 py-2 text-sm shadow-sm" />
+          ${help ? `<p class="mt-1 text-[11px] text-slate-600">${escapeHTML(help)}</p>` : ""}
+        </div>
+      `;
+    }
+
+    function textareaRow(label, id, value, opts={}) {
+      const { placeholder="", help="", required=false, rows=4 } = opts;
+      return `
+        <div>
+          <label class="block text-xs font-medium text-slate-700" for="${id}">${escapeHTML(label)}${required ? " *" : ""}</label>
+          <textarea id="${id}" ${required ? "required" : ""} rows="${rows}"
+            placeholder="${escapeHTML(placeholder)}"
+            class="mt-1 w-full rounded-xl border border-emerald-200 bg-white px-3 py-2 text-sm shadow-sm">${escapeHTML(value || "")}</textarea>
+          ${help ? `<p class="mt-1 text-[11px] text-slate-600">${escapeHTML(help)}</p>` : ""}
+        </div>
+      `;
+    }
+
+    function selectRow(label, id, value, options) {
+      return `
+        <div>
+          <label class="block text-xs font-medium text-slate-700" for="${id}">${escapeHTML(label)}</label>
+          <select id="${id}" class="mt-1 w-full rounded-xl border border-emerald-200 bg-white px-3 py-2 text-sm shadow-sm">
+            ${options.map(o => `<option ${o===value ? "selected" : ""}>${escapeHTML(o)}</option>`).join("")}
+          </select>
+        </div>
+      `;
+    }
+
+    function renderEditTab(term, tab) {
+      // Note: we render only visible tab fields. On save, we read from whichever inputs exist and merge carefully.
+      // We'll also keep a hidden "core" section always present for required fields? We'll include key identity fields in Resumen.
+      if (tab === "resumen") {
+        return `
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            ${inputRow("Lema principal", "e_lema", term.lema_principal, {required:true})}
+            ${selectRow("Categoría gramatical", "e_pos", term.categoria_gramatical, POS_DEFAULTS)}
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-700" for="e_lema_lang">Idioma del lema (entrada)</label>
+              <select id="e_lema_lang" class="mt-1 w-full rounded-xl border border-emerald-200 bg-white px-3 py-2 text-sm shadow-sm">
+                ${LANGS.map(l => `<option value="${l.code}" ${(l.code === (term.lema_idioma || "ast")) ? "selected" : ""}>${escapeHTML(l.label)}</option>`).join("")}
+              </select>
+              <p class="mt-1 text-[11px] text-slate-600">Indica el idioma en el que está escrito el lema principal.</p>
+            </div>
+          </div>
+
+          ${inputRow("Dominios (separar por coma)", "e_dominios", (term.dominios||[]).join(", "), {required:true, placeholder:"Proceso de elaboración, Partes del llagar"})}
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            ${textareaRow("Definición técnica", "e_def", term.definicion_tecnica, {required:true, rows:4})}
+            ${textareaRow("Etimología", "e_etim", term.etimologia, {rows:4})}
+          </div>
+
+          ${textareaRow("Explicación", "e_expl", term.explicacion, {rows:4})}
+
+          ${inputRow("Tags / notas culturales (separar por coma)", "e_tags", (term.tags||[]).join(", "), {placeholder:"patrimonio, variación diacrónica..."})}
+        `;
+      }
+
+      if (tab === "equivalentes") {
+        const mk = (k, label) => `
+          <div class="rounded-2xl border border-emerald-100 bg-white p-4">
+            <div class="flex items-center justify-between">
+              <h4 class="text-sm font-semibold">${escapeHTML(label)}</h4>
+              <span class="text-xs text-slate-600">Separar por coma</span>
+            </div>
+            <input id="e_eq_${k}" value="${escapeHTML((term.equivalentes?.[k]||[]).join(", "))}"
+              class="mt-2 w-full rounded-xl border border-emerald-200 bg-white px-3 py-2 text-sm shadow-sm"
+              placeholder="Ej.: término1, término2" />
+          </div>
+        `;
+        return `
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            ${mk("ast","Asturiano")}
+            ${mk("es","Español")}
+            ${mk("en","Inglés")}
+            ${mk("de","Alemán")}
+          </div>
+        `;
+      }
+
+      if (tab === "variantes") {
+        const vars = term.variantes || [];
+        const poly = term.polisemia || [];
+
+        const varRows = vars.map((v,i) => `
+          <div class="rounded-2xl border border-emerald-100 bg-white p-4 space-y-2" data-variant="${i}">
+            <div class="flex items-start justify-between gap-2">
+              <p class="text-sm font-semibold">Variante ${i+1}</p>
+              <button type="button" class="btnRemoveVariant text-sm text-rose-700 underline underline-offset-4" data-i="${i}">Eliminar</button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              ${inputRow("Tipo", `e_var_tipo_${i}`, v.tipo, {placeholder:"ortográfica / diatópica / registro"})}
+              ${inputRow("Forma", `e_var_forma_${i}`, v.forma, {placeholder:"variante"})}
+              ${inputRow("Nota", `e_var_nota_${i}`, v.nota, {placeholder:"observaciones"})}
+            </div>
+          </div>
+        `).join("");
+
+        const polyRows = poly.map((p,i) => `
+          <div class="rounded-2xl border border-emerald-100 bg-white p-4 space-y-3" data-poly="${i}">
+            <div class="flex items-start justify-between gap-2">
+              <p class="text-sm font-semibold">Acepción ${escapeHTML(p.acepcion || String(i+1))}</p>
+              <button type="button" class="btnRemovePoly text-sm text-rose-700 underline underline-offset-4" data-i="${i}">Eliminar</button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              ${inputRow("Nº acepción", `e_poly_num_${i}`, p.acepcion || String(i+1))}
+              ${inputRow("Dominios (coma)", `e_poly_dom_${i}`, (p.dominios||[]).join(", "), {placeholder:"Proceso de elaboración"})}
+              ${inputRow("Nota (opcional)", `e_poly_note_${i}`, p.nota || "", {placeholder:"contexto, restricción..."})}
+            </div>
+            ${textareaRow("Definición de la acepción", `e_poly_def_${i}`, p.definicion || "", {rows:3})}
+
+            <div class="rounded-xl bg-emerald-50 border border-emerald-100 p-3">
+              <div class="flex items-center justify-between">
+                <p class="text-xs font-semibold text-slate-700">Ejemplos (acepción)</p>
+                <button type="button" class="btnAddPolyEx rounded-lg bg-white hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 text-xs font-semibold text-emerald-800"
+                  data-i="${i}">+ Añadir ejemplo</button>
+              </div>
+              <div class="mt-2 space-y-2" id="poly_ex_wrap_${i}">
+                ${(p.ejemplos||[]).map((e,j)=>`
+                  <div class="rounded-xl bg-white border border-emerald-100 p-3">
+                    <div class="flex items-start justify-between gap-2">
+                      <p class="text-xs font-semibold text-slate-700">Ejemplo ${j+1}</p>
+                      <button type="button" class="btnRemovePolyEx text-xs text-rose-700 underline underline-offset-4" data-i="${i}" data-j="${j}">Eliminar</button>
+                    </div>
+                    ${inputRow("Texto", `e_poly_ex_text_${i}_${j}`, e.texto || "", {placeholder:"Ej.: ..."})}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                      ${inputRow("Fuente", `e_poly_ex_src_${i}_${j}`, e.fuente || "", {placeholder:"oral / corpus / informante / ..."})}
+                      ${inputRow("Nota", `e_poly_ex_note_${i}_${j}`, e.nota || "", {placeholder:"registro, lugar, fecha..."})}
+                    </div>
+                  </div>
+                `).join("") || `<p class="text-sm text-slate-600">Sin ejemplos en esta acepción.</p>`}
+              </div>
+            </div>
+          </div>
+        `).join("");
+
+        return `
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <h4 class="text-sm font-semibold">Variantes</h4>
+              <button type="button" id="btnAddVariant"
+                class="rounded-xl bg-white hover:bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm font-medium text-emerald-800">
+                + Añadir variante
+              </button>
+            </div>
+            <div class="space-y-2" id="variantsWrap">
+              ${varRows || `<p class="text-sm text-slate-600">No hay variantes.</p>`}
+            </div>
+
+            <hr class="border-emerald-100" />
+
+            <div class="flex items-center justify-between">
+              <h4 class="text-sm font-semibold">Polisemia</h4>
+              <button type="button" id="btnAddPoly"
+                class="rounded-xl bg-white hover:bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm font-medium text-emerald-800">
+                + Añadir acepción
+              </button>
+            </div>
+            <div class="space-y-2" id="polyWrap">
+              ${polyRows || `<p class="text-sm text-slate-600">No hay acepciones.</p>`}
+            </div>
+          </div>
+        `;
+      }
+
+      if (tab === "ejemplos") {
+        const ex = term.ejemplos || [];
+        const rows = ex.map((e,i)=>`
+          <div class="rounded-2xl border border-emerald-100 bg-white p-4 space-y-2" data-ex="${i}">
+            <div class="flex items-start justify-between gap-2">
+              <p class="text-sm font-semibold">Ejemplo ${i+1}</p>
+              <button type="button" class="btnRemoveExample text-sm text-rose-700 underline underline-offset-4" data-i="${i}">Eliminar</button>
+            </div>
+            ${inputRow("Texto", `e_ex_text_${i}`, e.texto || "", {placeholder:"Ej.: ..."})}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              ${inputRow("Fuente", `e_ex_src_${i}`, e.fuente || "", {placeholder:"oral / corpus / informante / ...", help:"Indica el origen del ejemplo."})}
+              ${inputRow("Nota", `e_ex_note_${i}`, e.nota || "", {placeholder:"registro, lugar, fecha..."})}
+            </div>
+          </div>
+        `).join("");
+
+        return `
+          <div class="flex items-center justify-between">
+            <h4 class="text-sm font-semibold">Ejemplos generales</h4>
+            <button type="button" id="btnAddExample"
+              class="rounded-xl bg-white hover:bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm font-medium text-emerald-800">
+              + Añadir ejemplo
+            </button>
+          </div>
+          <div class="mt-2 space-y-2" id="examplesWrap">
+            ${rows || `<p class="text-sm text-slate-600">No hay ejemplos generales.</p>`}
+          </div>
+
+          <div class="mt-4 rounded-xl border border-emerald-100 bg-emerald-50 p-3 text-xs text-slate-700">
+            Nota: los ejemplos dentro de cada acepción se gestionan en <span class="font-semibold">Variantes & polisemia</span>.
+          </div>
+        `;
+      }
+
+      if (tab === "imagenes") {
+        const imgs = term.imagenes || [];
+        const rows = imgs.map((im,i)=>`
+          <div class="rounded-2xl border border-emerald-100 bg-white p-4 space-y-2">
+            <div class="flex items-start justify-between gap-2">
+              <p class="text-sm font-semibold">Imagen ${i+1}</p>
+              <button type="button" class="btnRemoveImg text-sm text-rose-700 underline underline-offset-4" data-i="${i}">Eliminar</button>
+            </div>
+            ${inputRow("URL (si aplica)", `e_img_url_${i}`, (im.tipo==="url" ? im.src : ""), {placeholder:"https://..."})}
+            ${inputRow("Nota / pie de imagen", `e_img_note_${i}`, im.nota || "", {placeholder:"Descripción o procedencia"})}
+            ${im.tipo==="base64" ? `<p class="text-xs text-slate-600">Imagen subida (base64) · tamaño: ${(im.src||"").length} chars</p>` : ""}
+          </div>
+        `).join("");
+
+        return `
+          <div class="flex items-center justify-between">
+            <h4 class="text-sm font-semibold">Imágenes</h4>
+            <div class="flex items-center gap-2">
+              <button type="button" id="btnAddImgUrl"
+                class="rounded-xl bg-white hover:bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm font-medium text-emerald-800">
+                + Añadir URL
+              </button>
+              <label class="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 text-sm font-semibold shadow-sm cursor-pointer">
+                + Subir
+                <input id="imgUpload" type="file" accept="image/*" class="hidden" />
+              </label>
+            </div>
+          </div>
+          <div class="mt-2 space-y-2" id="imgsWrap">
+            ${rows || `<p class="text-sm text-slate-600">No hay imágenes.</p>`}
+          </div>
+
+          <div class="mt-4 rounded-xl border border-emerald-100 bg-emerald-50 p-3 text-xs text-slate-700">
+            Las imágenes subidas se guardan en <span class="font-semibold">base64</span> dentro de LocalStorage (puede aumentar el tamaño).
+          </div>
+        `;
+      }
+
+      if (tab === "referencias") {
+        const refs = term.referencias_bibliograficas || [];
+        const rows = refs.map((r,i)=>`
+          <div class="rounded-2xl border border-emerald-100 bg-white p-4 space-y-2">
+            <div class="flex items-start justify-between gap-2">
+              <p class="text-sm font-semibold">Referencia ${i+1} · <span class="text-slate-600">${escapeHTML((r.autor||"Autor") + " (" + (r.anio||"s.f.") + ")")}</span></p>
+              <button type="button" class="btnRemoveRef text-sm text-rose-700 underline underline-offset-4" data-i="${i}">Eliminar</button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              ${inputRow("Autor", `e_ref_aut_${i}`, r.autor || "", {placeholder:"Apellido, Nombre"})}
+              ${inputRow("Año", `e_ref_year_${i}`, r.anio || "", {placeholder:"2024"})}
+            </div>
+            ${inputRow("Título", `e_ref_title_${i}`, r.titulo || "", {placeholder:"Título de la obra"})}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              ${inputRow("Fuente", `e_ref_src_${i}`, r.fuente || "", {placeholder:"Revista / editorial / informe"})}
+              ${inputRow("DOI", `e_ref_doi_${i}`, r.doi || "", {placeholder:"10.XXXX/XXXX"})}
+            </div>
+            ${inputRow("URL", `e_ref_url_${i}`, r.url || "", {placeholder:"https://..."})}
+
+            <p class="text-xs text-slate-600">Vista autor-año: <span class="font-semibold">${escapeHTML((r.autor||"Autor") + " (" + (r.anio||"s.f.") + ")")}</span></p>
+          </div>
+        `).join("");
+
+        return `
+          <div class="flex items-center justify-between">
+            <h4 class="text-sm font-semibold">Referencias bibliográficas (normalizadas)</h4>
+            <button type="button" id="btnAddRef"
+              class="rounded-xl bg-white hover:bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm font-medium text-emerald-800">
+              + Añadir referencia
+            </button>
+          </div>
+          <div class="mt-2 space-y-2" id="refsWrap">
+            ${rows || `<p class="text-sm text-slate-600">No hay referencias.</p>`}
+          </div>
+        `;
+      }
+
+      return `<p class="text-sm text-slate-600">Sección no disponible.</p>`;
+    }
+
+    function toggleEdit(on) {
+      isEditing = !!on;
+      $("#readView").classList.toggle("hidden", isEditing);
+      $("#editView").classList.toggle("hidden", !isEditing);
+      $("#btnEdit").textContent = isEditing ? "Ver" : "Editar";
+
+      renderDetail();
+      if (isEditing) {
+        // Focus first field if present
+        setTimeout(() => {
+          const first = $("#editView").querySelector("input, textarea, select");
+          if (first) first.focus();
+        }, 0);
+      }
+    }
+
+    function commitEdits() {
+      const term = getSelected();
+      if (!term) return;
+
+      // Helper to read if exists
+      const val = (id) => {
+        const el = document.getElementById(id);
+        return el ? el.value : null;
+      };
+
+      // Resumen
+      const lema = val("e_lema");
+      const lemaLang = val("e_lema_lang");
+      const pos = val("e_pos");
+      const dominios = val("e_dominios");
+      const def = val("e_def");
+      const etim = val("e_etim");
+      const expl = val("e_expl");
+      const tags = val("e_tags");
+
+      if (lema !== null) term.lema_principal = lema.trim();
+      if (lemaLang !== null) term.lema_idioma = (lemaLang || "ast");
+      if (pos !== null) term.categoria_gramatical = pos;
+      if (dominios !== null) term.dominios = asArrayFromCommaList(dominios).map(d => d);
+      if (def !== null) term.definicion_tecnica = def.trim();
+      if (etim !== null) term.etimologia = etim.trim();
+      if (expl !== null) term.explicacion = expl.trim();
+      if (tags !== null) term.tags = asArrayFromCommaList(tags);
+
+      // Equivalentes
+      const eqKeys = ["ast","es","en","de"];
+      for (const k of eqKeys) {
+        const raw = val(`e_eq_${k}`);
+        if (raw !== null) term.equivalentes[k] = asArrayFromCommaList(raw);
+      }
+
+      // Ejemplos generales
+      if ($("#examplesWrap")) {
+        const examples = [];
+        const wrap = $("#examplesWrap");
+        const cards = $$("[data-ex]", wrap);
+        for (const card of cards) {
+          const i = Number(card.getAttribute("data-ex"));
+          const texto = val(`e_ex_text_${i}`) ?? "";
+          const fuente = val(`e_ex_src_${i}`) ?? "";
+          const nota  = val(`e_ex_note_${i}`) ?? "";
+          if ((texto || "").trim()) {
+            examples.push({ texto: texto.trim(), fuente: fuente.trim(), nota: nota.trim() });
+          }
+        }
+        term.ejemplos = examples;
+      }
+
+      // Variantes
+      if ($("#variantsWrap")) {
+        const vars = [];
+        const cards = $$("[data-variant]", $("#variantsWrap"));
+        for (const c of cards) {
+          const i = Number(c.getAttribute("data-variant"));
+          const tipo = (val(`e_var_tipo_${i}`) ?? "").trim();
+          const forma = (val(`e_var_forma_${i}`) ?? "").trim();
+          const nota  = (val(`e_var_nota_${i}`) ?? "").trim();
+          if (forma) vars.push({ tipo, forma, nota });
+        }
+        term.variantes = vars;
+      }
+
+      // Polisemia
+      if ($("#polyWrap")) {
+        const polys = [];
+        const cards = $$("[data-poly]", $("#polyWrap"));
+        for (const c of cards) {
+          const i = Number(c.getAttribute("data-poly"));
+          const acep = (val(`e_poly_num_${i}`) ?? String(i+1)).trim();
+          const doms = asArrayFromCommaList(val(`e_poly_dom_${i}`) ?? "");
+          const note = (val(`e_poly_note_${i}`) ?? "").trim();
+          const pdef = (val(`e_poly_def_${i}`) ?? "").trim();
+
+          // Ejemplos por acepción
+          const exs = [];
+          // Scan possible indices by looking at inputs that match prefix
+          const exWrap = document.getElementById(`poly_ex_wrap_${i}`);
+          if (exWrap) {
+            const textInputs = $$(`input[id^="e_poly_ex_text_${i}_"]`, exWrap);
+            for (const ti of textInputs) {
+              const parts = ti.id.split("_");
+              const j = Number(parts[parts.length - 1]);
+              const texto = (val(`e_poly_ex_text_${i}_${j}`) ?? "").trim();
+              const fuente = (val(`e_poly_ex_src_${i}_${j}`) ?? "").trim();
+              const nota = (val(`e_poly_ex_note_${i}_${j}`) ?? "").trim();
+              if (texto) exs.push({ texto, fuente, nota });
+            }
+          }
+
+          // Keep acepción even if partial (linguistic work-in-progress is common)
+          polys.push({ acepcion: acep, definicion: pdef, dominios: doms, nota: note, ejemplos: exs });
+        }
+        term.polisemia = polys;
+      }
+
+      // Imágenes
+      if ($("#imgsWrap")) {
+        const imgs = [];
+        const cards = $$("#imgsWrap > div");
+        // We cannot reliably know original indexes if user removed; rely on input ids.
+        // We'll parse ids by scanning e_img_note_ / e_img_url_
+        // For base64 images we store as is; URLs come from inputs.
+        const urlInputs = $$(`input[id^="e_img_url_"]`, $("#imgsWrap"));
+        // Build by index detected
+        const idxs = new Set(urlInputs.map(i => Number(i.id.split("_").pop())));
+        // Also include note inputs
+        $$(`input[id^="e_img_note_"]`, $("#imgsWrap")).forEach(i => idxs.add(Number(i.id.split("_").pop())));
+        const sorted = Array.from(idxs).filter(n => !Number.isNaN(n)).sort((a,b)=>a-b);
+
+        for (const i of sorted) {
+          const url = (val(`e_img_url_${i}`) ?? "").trim();
+          const note = (val(`e_img_note_${i}`) ?? "").trim();
+          const original = (term.imagenes || [])[i];
+
+          if (original && original.tipo === "base64") {
+            // base64 image: url field unused; keep original src
+            imgs.push({ tipo: "base64", src: original.src, nota: note || original.nota || "" });
+          } else if (url) {
+            imgs.push({ tipo: "url", src: url, nota: note });
+          }
+        }
+        term.imagenes = imgs;
+      }
+
+      // Referencias normalizadas
+      if ($("#refsWrap")) {
+        const refs = [];
+        const cards = $$("#refsWrap > div");
+        // Determine indices via inputs
+        const idxs = new Set();
+        $$(`input[id^="e_ref_aut_"]`, $("#refsWrap")).forEach(i => idxs.add(Number(i.id.split("_").pop())));
+        const sorted = Array.from(idxs).filter(n => !Number.isNaN(n)).sort((a,b)=>a-b);
+        for (const i of sorted) {
+          const autor = (val(`e_ref_aut_${i}`) ?? "").trim();
+          const anio  = (val(`e_ref_year_${i}`) ?? "").trim();
+          const titulo= (val(`e_ref_title_${i}`) ?? "").trim();
+          const fuente= (val(`e_ref_src_${i}`) ?? "").trim();
+          const doi   = (val(`e_ref_doi_${i}`) ?? "").trim();
+          const url   = (val(`e_ref_url_${i}`) ?? "").trim();
+          // Consider reference valid if at least author+title or title present
+          if (autor || titulo || url || doi) {
+            refs.push({ autor, anio, titulo, fuente, doi, url });
+          }
+        }
+        term.referencias_bibliograficas = refs;
+      }
+
+      // Basic sanity
+      if (!term.lema_principal.trim()) term.lema_principal = "(sin lema)";
+
+      saveDB();
+      populatePOS();
+      renderList();
+      renderDetail();
+      toast("Cambios guardados.");
+    }
+
+    /***********************
+     * CRUD operations
+     ***********************/
+    function createTermFromNewForm() {
+      const lema = ($("#new_lema").value || "").trim();
+      const lemaLang = ($("#new_lema_lang").value || "ast").trim();
+      const pos = ($("#new_pos").value || "").trim();
+      const dominios = asArrayFromCommaList($("#new_dominios").value || "");
+      const def = ($("#new_def").value || "").trim();
+      const etim = ($("#new_etim").value || "").trim();
+
+      const term = blankTerm();
+      term.lema_principal = lema;
+      term.lema_idioma = lemaLang || "ast";
+      term.categoria_gramatical = pos || "Sustantivo";
+      term.dominios = dominios;
+      term.definicion_tecnica = def;
+      term.etimologia = etim;
+
+      DB.terms.push(term);
+      saveDB();
+      populatePOS();
+      selectedId = term.id;
+      closeModal("modalNew");
+      renderAll();
+      toast("Lema creado.");
+      // Jump to detail & edit to complete quickly
+      toggleEdit(true);
+      setTab("equivalentes");
+    }
+
+    function deleteSelected() {
+      const term = getSelected();
+      if (!term) return;
+      const ok = confirm(`Eliminar el lema "${term.lema_principal}"?\n\nEsta acción no se puede deshacer (salvo reimportar un JSON).`);
+      if (!ok) return;
+
+      DB.terms = DB.terms.filter(t => t.id !== term.id);
+      selectedId = null;
+      saveDB();
+      populatePOS();
+      renderAll();
+      toast("Lema eliminado.");
+    }
+
+    function duplicateSelected() {
+      const term = getSelected();
+      if (!term) return;
+      const copy = JSON.parse(JSON.stringify(term));
+      copy.id = uid();
+      copy.lema_principal = (term.lema_principal || "") + " (copia)";
+      DB.terms.push(copy);
+      saveDB();
+      populatePOS();
+      selectedId = copy.id;
+      toggleEdit(false);
+      renderAll();
+      toast("Lema duplicado.");
+    }
+
+    /***********************
+     * Import / Export
+     ***********************/
+    function downloadJSON(obj, filename) {
+      const blob = new Blob([JSON.stringify(obj, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+
+    function validateImportJSON(text) {
+      try {
+        const data = JSON.parse(text);
+        const db = Array.isArray(data) ? { version: "1.0", terms: data } : data;
+        const normalized = normalizeDB(db);
+        // minimal validation
+        if (!Array.isArray(normalized.terms)) throw new Error("No hay 'terms'.");
+        return { ok: true, db: normalized, msg: `OK · ${normalized.terms.length} lema(s)` };
+      } catch (e) {
+        return { ok: false, db: null, msg: "JSON inválido: " + (e?.message || "error") };
+      }
+    }
+
+    function showImportStatus(kind, msg) {
+      const el = $("#importStatus");
+      el.classList.remove("hidden");
+      if (kind === "ok") {
+        el.className = "mt-3 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900";
+      } else if (kind === "warn") {
+        el.className = "mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900";
+      } else {
+        el.className = "mt-3 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-900";
+      }
+      el.textContent = msg;
+    }
+
+    function doImport(dbImported) {
+      const mode = ($('input[name="importMode"]:checked')?.value) || "replace";
+      if (mode === "replace") {
+        DB = dbImported;
+      } else {
+        // merge by id
+        const map = new Map(DB.terms.map(t => [t.id, t]));
+        for (const t of dbImported.terms) map.set(t.id, t);
+        DB.terms = Array.from(map.values());
+      }
+      saveDB();
+      populatePOS();
+      renderAll();
+      toast("Importación completada.");
+      showImportStatus("ok", `Importado (${mode}) · Total: ${DB.terms.length} lema(s).`);
+    }
+
+    /***********************
+     * Modal helpers
+     ***********************/
+    function openModal(id) {
+      const m = document.getElementById(id);
+      if (!m) return;
+      m.classList.remove("hidden");
+      // focus first focusable
+      setTimeout(() => {
+        const first = m.querySelector("input, textarea, select, button");
+        if (first) first.focus();
+      }, 0);
+    }
+    function closeModal(id) {
+      const m = document.getElementById(id);
+      if (!m) return;
+      m.classList.add("hidden");
+    }
+
+    /***********************
+     * Event wiring
+     ***********************/
+    // Category buttons
+    $$(".catBtn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        activeCat = btn.dataset.cat;
+        // style active
+        $$(".catBtn").forEach(b => b.classList.toggle("ring-2", b === btn));
+        $$(".catBtn").forEach(b => b.classList.toggle("ring-emerald-300", b === btn));
+        renderAll();
+      });
+    });
+
+    // Filters
+    ["q","pos","lang","lemmaLang","hasImages","hasRefs","onlyIncomplete"].forEach(id => {
+      const el = document.getElementById(id);
+      el.addEventListener(id === "q" ? "input" : "change", () => {
+        renderAll();
+      });
+    });
+
+    $("#btnClearFilters").addEventListener("click", () => {
+      $("#q").value = "";
+      $("#pos").value = "__all__";
+      $("#lang").value = "__all__";
+      $("#lemmaLang").value = "__all__";
+      $("#hasImages").checked = false;
+      $("#hasRefs").checked = false;
+      $("#onlyIncomplete").checked = false;
+      activeCat = "__all__";
+      // remove active ring
+      $$(".catBtn").forEach(b => b.classList.remove("ring-2","ring-emerald-300"));
+      renderAll();
+      toast("Filtros limpiados.");
+    });
+
+    // List click delegation
+    $("#termList").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-id]");
+      if (!btn) return;
+      selectedId = btn.dataset.id;
+      toggleEdit(false);
+      renderAll();
+    });
+
+    // Sort
+    $("#btnSort").addEventListener("click", () => {
+      sortAZ = !sortAZ;
+      $("#sortLabel").textContent = sortAZ ? "A–Z" : "Z–A";
+      renderList();
+    });
+
+    // Tabs
+    $$(".tabBtn").forEach(btn => {
+      btn.className = "tabBtn inline-flex items-center rounded-full px-3 py-1.5 text-sm font-medium border bg-white text-emerald-800 border-emerald-200 hover:bg-emerald-50";
+      btn.addEventListener("click", () => setTab(btn.dataset.tab));
+    });
+
+    // Edit / view toggles
+    $("#btnEdit").addEventListener("click", () => {
+      if (!getSelected()) return;
+      toggleEdit(!isEditing);
+    });
+
+    $("#btnCancelEdit").addEventListener("click", () => {
+      toggleEdit(false);
+      renderDetail();
+      toast("Edición cancelada.");
+    });
+
+    $("#editView").addEventListener("submit", (e) => {
+      e.preventDefault();
+      commitEdits();
+      // remain in edit mode for rapid work
+    });
+
+    $("#btnDelete").addEventListener("click", deleteSelected);
+    $("#btnDuplicate").addEventListener("click", duplicateSelected);
+
+    // New lemma modal
+    $("#btnNew").addEventListener("click", () => {
+      // reset form
+      $("#newForm").reset();
+      openModal("modalNew");
+    });
+    $("#newForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      createTermFromNewForm();
+    });
+
+    // Corpus modal
+    $("#btnCorpus").addEventListener("click", () => {
+      $("#importText").value = "";
+      $("#importStatus").classList.add("hidden");
+      $("#corpusNotes").value = loadNotes();
+      openModal("modalCorpus");
+    });
+
+    $("#btnSaveNotes").addEventListener("click", () => {
+      saveNotes($("#corpusNotes").value || "");
+      toast("Notas guardadas.");
+    });
+
+    $("#btnExport").addEventListener("click", () => {
+  const filename = `pomonIa_corpus_${new Date().toISOString().slice(0,10)}.json`;
+  downloadJSON(DB, filename);
+  toast("Corpus exportado.");
+});
+
+
+    $("#btnValidate").addEventListener("click", () => {
+      const txt = ($("#importText").value || "").trim();
+      if (!txt) {
+        showImportStatus("warn", "Pega JSON o selecciona un archivo primero.");
+        return;
+      }
+      const res = validateImportJSON(txt);
+      showImportStatus(res.ok ? "ok" : "err", res.msg);
+    });
+
+    $("#btnImport").addEventListener("click", async (e) => {
+      e.preventDefault();
+
+      // Prefer file if provided
+      const file = $("#importFile").files && $("#importFile").files[0];
+      let text = ($("#importText").value || "").trim();
+
+      if (file) {
+        try {
+          text = await file.text();
+        } catch {
+          showImportStatus("err", "No se pudo leer el archivo.");
+          return;
+        }
+      }
+
+      if (!text) {
+        showImportStatus("warn", "Pega JSON o selecciona un archivo para importar.");
+        return;
+      }
+
+      const res = validateImportJSON(text);
+      if (!res.ok) {
+        showImportStatus("err", res.msg);
+        return;
+      }
+
+      const mode = ($('input[name="importMode"]:checked')?.value) || "replace";
+      const msg = mode === "replace"
+        ? "Esto reemplazará el corpus actual. ¿Continuar?"
+        : "Esto fusionará por id (los ids coincidentes se sobrescriben). ¿Continuar?";
+      if (!confirm(msg)) return;
+
+      doImport(res.db);
+    });
+
+    $("#importFile").addEventListener("change", async () => {
+      const file = $("#importFile").files && $("#importFile").files[0];
+      if (!file) return;
+      try {
+        const txt = await file.text();
+        const res = validateImportJSON(txt);
+        showImportStatus(res.ok ? "ok" : "err", res.msg);
+      } catch {
+        showImportStatus("err", "No se pudo leer el archivo.");
+      }
+    });
+
+    // Reset (download backup + restore sample)
+    $("#btnReset").addEventListener("click", () => {
+      const ok = confirm("Esto restablecerá el corpus a los datos de ejemplo.\n\nAntes se descargará una copia de tu corpus actual.\n\n¿Continuar?");
+      if (!ok) return;
+
+      // Backup current
+      downloadJSON(DB, `pomonIa_backup_${new Date().toISOString().slice(0,19).replaceAll(":","-")}.json`);
+
+      // Reset
+      DB = sampleData();
+      selectedId = null;
+      activeCat = "__all__";
+      sortAZ = true;
+      $("#sortLabel").textContent = "A–Z";
+      // clear filters
+      $("#q").value = "";
+      $("#pos").value = "__all__";
+      $("#lang").value = "__all__";
+      $("#lemmaLang").value = "__all__";
+      $("#hasImages").checked = false;
+      $("#hasRefs").checked = false;
+      $("#onlyIncomplete").checked = false;
+      // remove active rings
+      $$(".catBtn").forEach(b => b.classList.remove("ring-2","ring-emerald-300"));
+
+      saveDB();
+      populatePOS();
+      renderAll();
+      toast("Restablecido.");
+    });
+
+    // Close modals (overlay + buttons)
+    $$("[data-close]").forEach(el => {
+      el.addEventListener("click", () => closeModal(el.dataset.close));
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener("keydown", (e) => {
+      // Escape closes any open modal
+      if (e.key === "Escape") {
+        ["modalNew","modalCorpus"].forEach(id => {
+          const m = document.getElementById(id);
+          if (m && !m.classList.contains("hidden")) closeModal(id);
+        });
+      }
+
+      // Ctrl+N => new term
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "n") {
+        e.preventDefault();
+        $("#newForm").reset();
+        openModal("modalNew");
+      }
+
+      // Delete => delete selected term (only when not editing inside an input/textarea)
+      if (e.key === "Delete") {
+        const tag = (document.activeElement?.tagName || "").toLowerCase();
+        const inField = tag === "input" || tag === "textarea" || document.activeElement?.isContentEditable;
+        if (!inField && selectedId) {
+          deleteSelected();
+        }
+      }
+    });
+
+    /***********************
+     * Dynamic edit actions
+     ***********************/
+    function ensureEditing() {
+      if (!getSelected()) return false;
+      if (!isEditing) toggleEdit(true);
+      return true;
+    }
+
+    // Event delegation for buttons inside editView (tabs)
+    $("#editView").addEventListener("click", (e) => {
+      const term = getSelected();
+      if (!term) return;
+
+      // Variants
+      if (e.target.closest("#btnAddVariant")) {
+        e.preventDefault();
+        term.variantes = Array.isArray(term.variantes) ? term.variantes : [];
+        term.variantes.push({ tipo: "", forma: "", nota: "" });
+        renderDetail();
+        return;
+      }
+      const rmVar = e.target.closest(".btnRemoveVariant");
+      if (rmVar) {
+        e.preventDefault();
+        const i = Number(rmVar.dataset.i);
+        if (!Number.isNaN(i)) {
+          term.variantes.splice(i, 1);
+          renderDetail();
+        }
+        return;
+      }
+
+      // Polisemy
+      if (e.target.closest("#btnAddPoly")) {
+        e.preventDefault();
+        term.polisemia = Array.isArray(term.polisemia) ? term.polisemia : [];
+        term.polisemia.push({ acepcion: String(term.polisemia.length + 1), definicion: "", dominios: [], nota: "", ejemplos: [] });
+        renderDetail();
+        return;
+      }
+      const rmPoly = e.target.closest(".btnRemovePoly");
+      if (rmPoly) {
+        e.preventDefault();
+        const i = Number(rmPoly.dataset.i);
+        if (!Number.isNaN(i)) {
+          term.polisemia.splice(i, 1);
+          renderDetail();
+        }
+        return;
+      }
+
+      // Add example within a polysense
+      const addPolyEx = e.target.closest(".btnAddPolyEx");
+      if (addPolyEx) {
+        e.preventDefault();
+        const i = Number(addPolyEx.dataset.i);
+        if (!Number.isNaN(i)) {
+          term.polisemia[i] = term.polisemia[i] || { acepcion: String(i+1), definicion: "", dominios: [], nota: "", ejemplos: [] };
+          term.polisemia[i].ejemplos = Array.isArray(term.polisemia[i].ejemplos) ? term.polisemia[i].ejemplos : [];
+          term.polisemia[i].ejemplos.push({ texto: "", fuente: "", nota: "" });
+          renderDetail();
+        }
+        return;
+      }
+      const rmPolyEx = e.target.closest(".btnRemovePolyEx");
+      if (rmPolyEx) {
+        e.preventDefault();
+        const i = Number(rmPolyEx.dataset.i);
+        const j = Number(rmPolyEx.dataset.j);
+        if (!Number.isNaN(i) && !Number.isNaN(j)) {
+          const p = term.polisemia[i];
+          if (p && Array.isArray(p.ejemplos)) {
+            p.ejemplos.splice(j, 1);
+            renderDetail();
+          }
+        }
+        return;
+      }
+
+      // General examples
+      if (e.target.closest("#btnAddExample")) {
+        e.preventDefault();
+        term.ejemplos = Array.isArray(term.ejemplos) ? term.ejemplos : [];
+        term.ejemplos.push({ texto: "", fuente: "", nota: "" });
+        renderDetail();
+        return;
+      }
+      const rmEx = e.target.closest(".btnRemoveExample");
+      if (rmEx) {
+        e.preventDefault();
+        const i = Number(rmEx.dataset.i);
+        if (!Number.isNaN(i)) {
+          term.ejemplos.splice(i, 1);
+          renderDetail();
+        }
+        return;
+      }
+
+      // Images
+      if (e.target.closest("#btnAddImgUrl")) {
+        e.preventDefault();
+        term.imagenes = Array.isArray(term.imagenes) ? term.imagenes : [];
+        term.imagenes.push({ tipo: "url", src: "", nota: "" });
+        renderDetail();
+        return;
+      }
+      const rmImg = e.target.closest(".btnRemoveImg");
+      if (rmImg) {
+        e.preventDefault();
+        const i = Number(rmImg.dataset.i);
+        if (!Number.isNaN(i)) {
+          term.imagenes.splice(i, 1);
+          renderDetail();
+        }
+        return;
+      }
+
+      // Refs
+      if (e.target.closest("#btnAddRef")) {
+        e.preventDefault();
+        term.referencias_bibliograficas = Array.isArray(term.referencias_bibliograficas) ? term.referencias_bibliograficas : [];
+        term.referencias_bibliograficas.push({ autor: "", anio: "", titulo: "", fuente: "", doi: "", url: "" });
+        renderDetail();
+        return;
+      }
+      const rmRef = e.target.closest(".btnRemoveRef");
+      if (rmRef) {
+        e.preventDefault();
+        const i = Number(rmRef.dataset.i);
+        if (!Number.isNaN(i)) {
+          term.referencias_bibliograficas.splice(i, 1);
+          renderDetail();
+        }
+        return;
+      }
+    });
+
+    // Image upload (base64) needs change handler (element is created per render)
+    $("#editView").addEventListener("change", (e) => {
+      const input = e.target;
+      if (!input || input.id !== "imgUpload") return;
+
+      const term = getSelected();
+      if (!term) return;
+
+      const file = input.files && input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        term.imagenes = Array.isArray(term.imagenes) ? term.imagenes : [];
+        term.imagenes.push({ tipo: "base64", src: String(reader.result || ""), nota: file.name || "Subida" });
+        renderDetail();
+        toast("Imagen subida.");
+        // reset so same file can be re-uploaded if needed
+        input.value = "";
+      };
+      reader.onerror = () => {
+        toast("Error al subir la imagen.");
+      };
+      reader.readAsDataURL(file);
+    });
+
+    /***********************
+     * Initial render
+     ***********************/
+    function renderAll() {
+      updateCounts();
+      renderList();
+      renderDetail();
+    }
+
+    // Initial: populate POS and counts + list
+    populatePOS();
+    updateCounts();
+    renderAll();
+
+    // Default highlight "Todas"
+    const allBtn = document.querySelector('.catBtn[data-cat="__all__"]');
+    if (allBtn) {
+      allBtn.classList.add("ring-2","ring-emerald-300");
+    }
+
+  </script>
+</body>
+</html>
+
