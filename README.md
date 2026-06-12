@@ -27,11 +27,11 @@ Development
 
 Pomonia has been developed using modern web technologies and is intended as an open educational and research resource.
 
-Citation
+## Citation
 
 If you use Pomonia in research, teaching, academic publications, or professional projects, please cite:
 
-Rodríguez Fernández-Peña, A. C. (2026). Pomonia: Multilingual Terminology Management Platform. University of Oviedo. DOI: [DOI pending]
+> Rodríguez Fernández-Peña, A. C. (2026). *Pomonia: Multilingual Terminology Management Platform* (Version 1.0.0). University of Oviedo. https://doi.org/10.5281/zenodo.20669581
 
 Author
 
