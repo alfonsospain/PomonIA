@@ -1,0 +1,44 @@
+cff-version: 1.2.0
+title: "PomonIA"
+message: "If you use this software, please cite it as follows."
+
+type: software
+
+authors:
+  - family-names: "Rodríguez Fernández-Peña"
+    given-names: "Alfonso Carlos"
+    affiliation: "University of Oviedo"
+
+  - family-names: "Quijada Diez"
+    given-names: "Carmen"
+    affiliation: "University of Oviedo"
+
+version: "1.1.0"
+
+date-released: 2026-06-24
+
+license: MIT
+
+repository-code: "https://github.com/alfonsospain/PomonIA"
+
+url: "https://alfonsospain.github.io/PomonIA/"
+
+abstract: >
+  Open-access multilingual terminographical platform developed at the
+  University of Oviedo for research, teaching and knowledge transfer
+  in cider culture, apple-related terminology and multilingual
+  specialised communication.
+
+keywords:
+  - terminology
+  - terminography
+  - translation
+  - multilingual
+  - lexicography
+  - digital humanities
+  - cider
+  - apple
+  - Asturian
+  - Spanish
+  - English
+  - German
