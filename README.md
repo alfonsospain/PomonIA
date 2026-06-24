@@ -1,48 +1,122 @@
-Pomonia
+# PomonIA
 
-Pomonia is a multilingual terminology management platform designed to support research, teaching, and knowledge transfer in specialized domains.
+**PomonIA** is an open-access multilingual terminographical platform developed at the **University of Oviedo** to support research, teaching, and knowledge transfer in the fields of terminology, translation, digital humanities, and cider cultural heritage.
 
-The application allows users to create, store, organize, search, and manage multilingual terminology records through an intuitive web interface. Pomonia has been developed as part of ongoing research and innovation activities at the University of Oviedo, with a particular focus on terminology management, translation, intercultural communication, and digital humanities.
+The platform has been specifically designed to document, organize, and explore specialised terminology related to **cider culture**, **apple cultivation**, and the **traditional material and intangible heritage** associated with cider production.
 
-Features
-Multilingual terminology database
-Advanced term search and filtering
-Concept-oriented terminology management
-Customizable terminology records
-User-friendly interface
-Web-based architecture
-Designed for teaching, research, and professional practice
-Applications
+Currently, PomonIA supports four working languages:
 
-Pomonia can be used in:
+* Asturian
+* Spanish
+* English
+* German
 
-Translation and localization projects
-Terminology management
-Corpus-based research
-Language technology projects
-Translator training
-Intercultural communication studies
-Knowledge management initiatives
-Development
+---
 
-Pomonia has been developed using modern web technologies and is intended as an open educational and research resource.
+# Main Features
 
-## Citation
+* Multilingual terminographical database
+* Concept-oriented terminology management
+* Advanced search and filtering
+* Accent-insensitive search
+* Academic metadata management
+* Terminological definitions
+* Multilingual equivalents
+* Usage examples
+* Bibliographical references
+* Image support
+* Local-first architecture (offline capable)
+* Responsive interface
+* Open-access software
 
-If you use Pomonia in research, teaching, academic publications, or professional projects, please cite:
+---
 
-> Rodríguez Fernández-Peña, A. C. (2026). *Pomonia: Multilingual Terminology Management Platform* (Version 1.0.0). University of Oviedo. https://doi.org/10.5281/zenodo.20669581
+# Intended Users
 
-Author
+PomonIA has been developed for:
 
-Alfonso C. Rodríguez Fernández-Peña
+* Researchers
+* Terminologists
+* Professional translators
+* Translation students
+* Lexicographers
+* Language technology projects
+* Cider producers and associations
+* Cultural heritage institutions
+
+---
+
+# Research Context
+
+PomonIA forms part of the research and knowledge-transfer activities carried out at the **University of Oviedo**, contributing to the documentation, preservation, and dissemination of specialised multilingual terminology related to Asturian cider culture.
+
+The platform combines approaches from:
+
+* Terminology
+* Translation Studies
+* Lexicography
+* Digital Humanities
+* Cultural Heritage
+* Multilingual Communication
+
+---
+
+# Citation
+
+If you use PomonIA in research, teaching, academic publications, or professional projects, please cite:
+
+Rodríguez Fernández-Peña, A. C., & Quijada Diez, C. (2026). *PomonIA: Multilingual Terminographical Platform for Cider Culture and Apple-Related Terminology* (Version 1.1.0). University of Oviedo.
+
+DOI:
+
+10.5281/zenodo.XXXXXXXX
+
+---
+
+# Authors
+
+**Alfonso Carlos Rodríguez Fernández-Peña**
+
 Department of English, French and German Philology
-University of Oviedo (Spain)
 
-License
+University of Oviedo
 
-This project is released under the MIT License.
+ORCID: (optional)
 
-Acknowledgements
+---
 
-Pomonia is being developed within the framework of research and knowledge transfer activities conducted at the University of Oviedo and in collaboration with specialists in translation, terminology, language technologies, and digital innovation.
+**Carmen Quijada Diez**
+
+University of Oviedo
+
+ORCID: (optional)
+
+---
+
+# License
+
+This software is distributed under the **MIT License**.
+
+---
+
+# Acknowledgements
+
+PomonIA has been developed within the framework of research and knowledge-transfer activities carried out by the **University of Oviedo** and the **TradDisc Research Group**.
+
+The project contributes to the preservation, documentation, and dissemination of multilingual terminology associated with cider culture and traditional Asturian heritage.
+
+---
+
+# Repository
+
+This repository contains the complete source code of PomonIA.
+
+The project is maintained as an open-access academic software initiative intended for research, teaching, and public dissemination.
+
+---
+
+# Version
+
+Current version:
+
+**v1.1.0**
