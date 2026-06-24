@@ -5,11 +5,18 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>POMONIA — Herramienta terminográfica</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <meta name="color-scheme" content="light" />
   <style>
+    body { font-family: 'Inter', sans-serif; }
     /* Pequeños ajustes de accesibilidad */
     :focus-visible { outline: 3px solid rgba(34,197,94,.55); outline-offset: 2px; }
     .sr-only-focusable:active, .sr-only-focusable:focus { position: static; width: auto; height: auto; margin: 0; overflow: visible; clip: auto; white-space: normal; }
+    /* Hide scrollbars but keep functionality */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 
@@ -17,34 +24,51 @@
   <a href="#main" class="sr-only sr-only-focusable bg-white p-2 rounded shadow">Saltar al contenido principal</a>
 
   <!-- Top bar -->
-  <header class="sticky top-0 z-30 backdrop-blur bg-white/80 border-b border-emerald-100">
-    <div class="mx-auto max-w-7xl px-4 py-3 flex items-center gap-3">
-      <div class="flex items-center gap-2">
-        <div class="w-9 h-9 rounded-xl bg-emerald-100 border border-emerald-200 flex items-center justify-center">
-          <span class="text-emerald-700 font-bold">🍏</span>
+  <header class="sticky top-0 z-30 backdrop-blur bg-white/80 border-b border-slate-200/80">
+    <div class="mx-auto max-w-7xl px-4 py-4 flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+      <!-- Left side: Stacked institutional branding & title block -->
+      <div class="flex flex-col gap-1 w-full lg:w-auto">
+        <div class="flex items-baseline">
+          <span class="text-3xl font-extrabold tracking-tight text-slate-900">Pomon</span>
+          <span class="text-3xl font-light tracking-wide text-emerald-600">IA</span>
         </div>
-        <div>
-          <h1 class="text-lg font-semibold leading-tight">POMONIA</h1>
-          <p class="text-xs text-slate-600 -mt-0.5">Gestión terminográfica · Llagar · Manzana · Léxico geopónico</p>
-        </div>
+        <h2 class="text-xs font-bold text-slate-800 mt-1 select-text">Plataforma Terminográfica Multilingüe para la Cultura de la Sidra y la Terminología de la Manzana</h2>
+        <div class="text-[11px] text-slate-400 font-medium tracking-tight select-text">Universidad de Oviedo · Grupo de Investigación TradDisc</div>
       </div>
 
-      <div class="ml-auto flex items-center gap-2">
+      <!-- Right side: Controls, About Button & Language Selector -->
+      <div class="flex flex-wrap items-center justify-center lg:justify-end gap-2 w-full lg:w-auto mt-2 lg:mt-0 shrink-0">
         <button id="btnNew"
-          class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 text-sm font-medium shadow-sm"
+          class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 text-sm font-medium shadow-sm transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
           title="Crear lema (Ctrl+N)">
-          <span aria-hidden="true">＋</span> Nuevo lema
+          <span aria-hidden="true" class="text-base">＋</span> Nuevo lema
         </button>
         <button id="btnCorpus"
-          class="inline-flex items-center gap-2 rounded-xl bg-white hover:bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-2 text-sm font-medium shadow-sm"
+          class="inline-flex items-center gap-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 px-3.5 py-2 text-sm font-medium shadow-sm transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
           title="Importar/Exportar · Corpus">
-          <span aria-hidden="true">⤓⤒</span> Corpus
+          <span aria-hidden="true" class="text-xs">⤓⤒</span> Corpus
         </button>
         <button id="btnReset"
-          class="inline-flex items-center gap-2 rounded-xl bg-white hover:bg-rose-50 border border-rose-200 text-rose-700 px-3 py-2 text-sm font-medium shadow-sm"
+          class="inline-flex items-center gap-1.5 rounded-xl bg-white hover:bg-rose-50 border border-rose-200 text-rose-700 px-3.5 py-2 text-sm font-medium shadow-sm transition-colors focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
           title="Restablecer datos (mantiene copia en descarga)">
-          <span aria-hidden="true">↺</span> Reset
+          <span aria-hidden="true" class="text-xs">↺</span> Reset
         </button>
+      
+        <div class="flex items-center gap-2 ml-1">
+          <button id="btnAbout"
+            type="button"
+            class="inline-flex items-center gap-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 px-3.5 py-2 text-sm font-medium shadow-sm transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+            title="Sobre el proyecto">
+            Acerca de
+          </button>
+          <label for="uiLang" class="sr-only">Idioma de la interfaz</label>
+          <select id="uiLang" class="rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 px-3.5 py-2 text-sm font-medium shadow-sm transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2" title="Idioma de la interfaz">
+            <option value="es">Español</option>
+            <option value="en">English</option>
+            <option value="de">Deutsch</option>
+            <option value="fr">Français</option>
+          </select>
+        </div>
       </div>
     </div>
   </header>
@@ -224,21 +248,21 @@
 
             <div class="flex items-center gap-2 shrink-0">
               <button id="btnEdit"
-                class="rounded-xl bg-white hover:bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm font-medium text-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                class="rounded-xl bg-white hover:bg-slate-50 border border-slate-200 px-3.5 py-2 text-sm font-medium text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
                 disabled>
                 Editar
               </button>
               <button id="btnDelete"
-                class="rounded-xl bg-white hover:bg-rose-50 border border-rose-200 px-3 py-2 text-sm font-medium text-rose-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                class="rounded-xl bg-white hover:bg-rose-50 border border-rose-200 px-3.5 py-2 text-sm font-medium text-rose-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
                 disabled>
                 Eliminar
               </button>
             </div>
           </div>
 
-          <!-- Tabs (mobile-friendly). Always visible, content changes based on view/edit -->
-          <div class="px-4 pt-3">
-            <div class="flex flex-wrap gap-2" role="tablist" aria-label="Secciones">
+          <!-- Tabs (mobile-friendly). Horizontal scroll on small screens -->
+          <div class="px-4 pt-3 border-b border-slate-100">
+            <div class="flex gap-2 overflow-x-auto no-scrollbar whitespace-nowrap pb-2" role="tablist" aria-label="Secciones">
               <button class="tabBtn" data-tab="resumen" role="tab" aria-selected="true">Resumen</button>
               <button class="tabBtn" data-tab="equivalentes" role="tab" aria-selected="false">Equivalentes</button>
               <button class="tabBtn" data-tab="variantes" role="tab" aria-selected="false">Variantes & polisemia</button>
@@ -298,47 +322,111 @@
     </div>
   </main>
 
-  <!-- Footer -->
-  <footer class="mt-8 border-t border-emerald-100 bg-white">
-    <div class="mx-auto max-w-7xl px-4 py-6 text-center text-sm text-slate-600">
-      
-      <p class="font-semibold text-slate-800">
-        Pomonia v1.0.0
-      </p>
+  <!-- Academic Footer -->
+  <footer class="mt-12 border-t border-slate-200 bg-white py-8 text-slate-600 no-translate">
+    <div class="mx-auto max-w-7xl px-4 grid grid-cols-1 md:grid-cols-2 gap-8 text-xs">
+      <div class="space-y-3">
+        <h3 class="font-bold text-slate-800 text-sm">Información del Proyecto / Project Information</h3>
+        
+        <!-- Logos row centered with generous margin -->
+        <div class="py-4 flex items-center justify-center gap-6">
+          <img src="assets/logo-grupo.png" alt="Research Group Logo" class="h-[50px] w-auto object-contain" onerror="this.style.display='none'" />
+          <img src="assets/logo-uniovi.png" alt="University of Oviedo Logo" class="h-[50px] w-auto object-contain" onerror="this.style.display='none'" />
+        </div>
 
-      <p>
-        © 2026 Alfonso C. Rodríguez Fernández-Peña
-      </p>
+        <p class="leading-relaxed">
+          <strong>PomonIA</strong> es una plataforma terminográfica multilingüe de acceso abierto orientada a la cultura de la sidra, la terminología del manzano y el patrimonio cultural tradicional asturiano en contraste con el español, inglés y alemán.
+        </p>
+        <p class="leading-relaxed text-slate-500">
+          Diseñado como recurso de transferencia científica y docente para investigadores, traductores, estudiantes y profesionales del sector sidrero. Desarrollado en la Universidad de Oviedo por Alfonso Carlos Rodríguez Fernández-Peña y Carmen Quijada Diez.
+        </p>
+      </div>
+      <div class="space-y-3">
+        <h3 class="font-bold text-slate-800 text-sm">Cómo citar / How to Cite</h3>
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 font-mono text-[11px] leading-relaxed text-slate-700 select-all">
+          Rodríguez Fernández-Peña, A. C., & Quijada Diez, C. (2026). PomonIA: Multilingual Terminographical Platform for Cider Culture and Apple-Related Terminology (Version 1.1.0). University of Oviedo.
+        </div>
+        
+        <!-- DOI Section -->
+        <div class="mt-3">
+          <div class="font-bold text-slate-700 text-xs">DOI</div>
+          <div class="font-mono text-[11px] text-slate-600 select-all mt-0.5">10.5281/zenodo.XXXXXXXX</div>
+        </div>
 
-      <p>
-        Department of English, French and German Philology
-      </p>
-
-      <p>
-        University of Oviedo
-      </p>
-
-      <p class="mt-2">
-        Released under the MIT License
-      </p>
-
-      <p class="mt-2">
-        DOI:
-        <a href="https://doi.org/10.5281/zenodo.20669581"
-           target="_blank"
-           class="text-emerald-700 hover:text-emerald-900 underline">
-          10.5281/zenodo.20669581
-        </a>
-      </p>
-
-      <p class="mt-2 text-xs text-slate-500">
-        Developed for terminology management, translation, research and knowledge transfer.
-      </p>
-
+        <p class="text-[10px] text-slate-400 mt-4">
+          © 2026 Alfonso Carlos Rodríguez Fernández-Peña & Carmen Quijada Diez, Universidad de Oviedo. Todos los derechos reservados.
+        </p>
+      </div>
     </div>
   </footer>
 
-  <!-- Modal: New term -->
+  <!-- Modal: About -->
+  <div id="modalAbout" class="hidden fixed inset-0 z-50">
+    <div class="absolute inset-0 bg-slate-900/30" data-close="modalAbout"></div>
+    <div class="relative mx-auto max-w-2xl p-4 sm:p-6 mt-10">
+      <div class="rounded-2xl bg-white border border-slate-200 shadow-xl overflow-hidden no-translate">
+        <div class="p-4 border-b border-slate-100 flex items-start justify-between gap-3 bg-slate-50">
+          <div>
+            <h2 class="text-base font-semibold text-slate-900">Sobre PomonIA / About PomonIA</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Información institucional del proyecto / Project Institutional Information</p>
+          </div>
+          <button class="rounded-xl bg-white hover:bg-slate-100 border border-slate-200 px-3 py-1.5 text-sm"
+                  aria-label="Cerrar" data-close="modalAbout">✕</button>
+        </div>
+        
+        <div class="p-6 space-y-4 text-sm text-slate-700">
+          <div>
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Proyecto / Project</h3>
+            <p class="font-semibold text-slate-900 text-base">PomonIA</p>
+            <p class="text-slate-600 mt-1">Plataforma Terminográfica Multilingüe para la Cultura de la Sidra y la Terminología de la Manzana / Multilingual Terminographical Platform for Cider Culture and Apple-Related Terminology</p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Autores / Authors</h3>
+              <ul class="list-disc list-inside text-slate-800 space-y-0.5 mt-1">
+                <li>Alfonso Carlos Rodríguez Fernández-Peña</li>
+                <li>Carmen Quijada Diez</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Filiación / Affiliation</h3>
+              <p class="text-slate-800 mt-1">Universidad de Oviedo (University of Oviedo)</p>
+              <p class="text-slate-600">Grupo de Investigación TradDisc</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Versión / Version</h3>
+              <p class="text-slate-800 mt-1 font-semibold">1.1.0</p>
+            </div>
+            <div>
+              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Licencia / License</h3>
+              <p class="text-slate-800 mt-1">MIT License</p>
+            </div>
+            <div>
+              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">DOI</h3>
+              <p class="text-slate-800 mt-1 font-mono text-xs">10.5281/zenodo.XXXXXXXX</p>
+            </div>
+          </div>
+
+          <div class="border-t border-slate-100 pt-4">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Cita sugerida / Suggested Citation</h3>
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono text-[11px] leading-relaxed text-slate-700 mt-1 select-all">
+              Rodríguez Fernández-Peña, A. C., & Quijada Diez, C. (2026). PomonIA: Multilingual Terminographical Platform for Cider Culture and Apple-Related Terminology (Version 1.1.0). University of Oviedo.
+            </div>
+          </div>
+        </div>
+
+        <div class="p-4 border-t border-slate-100 flex items-center justify-end bg-slate-50">
+          <button data-close="modalAbout" class="rounded-xl bg-white hover:bg-slate-100 border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700">
+            Cerrar / Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal: New term -->
   <div id="modalNew" class="hidden fixed inset-0 z-50">
@@ -785,6 +873,41 @@
     let sortAZ = true;
     let activeTab = "resumen";
     let isEditing = false;
+    let draftTerm = null; // In-memory draft for editing
+
+    // Accent-insensitive normalization helper
+    function normalizeText(str) {
+      return (str || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    // Match highlighting helper for lemma list
+    function highlightMatch(text, query) {
+      if (!query) return escapeHTML(text);
+      const normalizedText = normalizeText(text);
+      const normalizedQuery = normalizeText(query);
+      const index = normalizedText.indexOf(normalizedQuery);
+      if (index === -1) return escapeHTML(text);
+
+      let result = "";
+      let lastIdx = 0;
+      let searchIdx = 0;
+      while (searchIdx < text.length) {
+        const matchIdx = normalizedText.indexOf(normalizedQuery, searchIdx);
+        if (matchIdx === -1) {
+          result += escapeHTML(text.substring(lastIdx));
+          break;
+        }
+        result += escapeHTML(text.substring(lastIdx, matchIdx));
+        const matchedOriginal = text.substring(matchIdx, matchIdx + query.length);
+        result += `<mark class="bg-amber-100 text-amber-950 px-0.5 rounded-sm font-semibold">${escapeHTML(matchedOriginal)}</mark>`;
+        lastIdx = matchIdx + query.length;
+        searchIdx = lastIdx;
+      }
+      return result;
+    }
 
     const $ = (sel, root=document) => root.querySelector(sel);
     const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
@@ -843,6 +966,24 @@
       return parts.join(" ").toLowerCase();
     }
 
+    function fullTextNormalized(term) {
+      const parts = [
+        term.lema_principal,
+        term.categoria_gramatical,
+        (term.dominios || []).join(" "),
+        term.definicion_tecnica,
+        term.etimologia,
+        term.explicacion,
+        (term.tags || []).join(" "),
+        JSON.stringify(term.equivalentes || {}),
+        JSON.stringify(term.variantes || []),
+        JSON.stringify(term.polisemia || []),
+        JSON.stringify(term.ejemplos || []),
+        JSON.stringify(term.referencias_bibliograficas || []),
+      ];
+      return normalizeText(parts.join(" "));
+    }
+
     function currentFilters() {
       return {
         q: ($("#q").value || "").trim().toLowerCase(),
@@ -884,7 +1025,8 @@
       }
 
       if (f.q) {
-        if (!fullText(term).includes(f.q)) return false;
+        const queryNormalized = normalizeText(f.q);
+        if (!fullTextNormalized(term).includes(queryNormalized)) return false;
       }
       return true;
     }
@@ -904,6 +1046,10 @@
     }
 
     function setTab(tab) {
+      // Save current input fields to draftTerm before rendering the next tab, preventing data loss
+      if (isEditing && draftTerm) {
+        updateDraftFromDOM();
+      }
       activeTab = tab;
       $$(".tabBtn").forEach(btn => {
         const on = btn.dataset.tab === tab;
@@ -950,6 +1096,7 @@
       const list = $("#termList");
       const items = filteredTerms();
       $("#resultCount").textContent = `${items.length} resultado(s)`;
+      const query = ($("#q").value || "").trim();
 
       list.innerHTML = "";
       if (items.length === 0) {
@@ -972,7 +1119,7 @@
             <div class="flex items-start justify-between gap-2">
               <div class="min-w-0">
                 <div class="flex items-center gap-2">
-                  <span class="font-semibold text-slate-900 truncate">${escapeHTML(term.lema_principal || "(sin lema)")}</span>
+                  <span class="font-semibold text-slate-900 truncate">${highlightMatch(term.lema_principal || "(sin lema)", query)}</span>
                   <span class="inline-flex items-center rounded-full bg-slate-50 border border-slate-200 px-2 py-0.5 text-[11px] text-slate-700" title="Idioma del lema">
                     ${escapeHTML(langLabel(term.lema_idioma || "ast"))}
                   </span>
@@ -1027,9 +1174,12 @@
         return;
       }
 
-      const q = quality(term);
-      $("#detailTitle").textContent = term.lema_principal || "(sin lema)";
-      $("#detailSubtitle").textContent = `${langLabel(term.lema_idioma || "ast")} · ${term.categoria_gramatical || ""} · ${((term.dominios||[]).join(" · ")) || "Sin dominios"}`;
+      // If in editing mode, use draftTerm; otherwise use original database term.
+      const activeTermRef = (isEditing && draftTerm) ? draftTerm : term;
+
+      const q = quality(activeTermRef);
+      $("#detailTitle").textContent = activeTermRef.lema_principal || "(sin lema)";
+      $("#detailSubtitle").textContent = `${langLabel(activeTermRef.lema_idioma || "ast")} · ${activeTermRef.categoria_gramatical || ""} · ${((activeTermRef.dominios||[]).join(" · ")) || "Sin dominios"}`;
 
       const banner = $("#qcBanner");
       if (q.complete) {
@@ -1042,12 +1192,11 @@
         banner.classList.remove("hidden");
       }
 
-      // Render by tab (read mode)
+      // Render by tab (read mode or draft-based edit mode)
       if (!isEditing) {
         $("#readContent").innerHTML = renderReadTab(term, activeTab);
       } else {
-        $("#editContent").innerHTML = renderEditTab(term, activeTab);
-        // keep hidden fields in sync (if needed)
+        $("#editContent").innerHTML = renderEditTab(draftTerm, activeTab);
       }
     }
 
@@ -1550,8 +1699,25 @@
       return `<p class="text-sm text-slate-600">Sección no disponible.</p>`;
     }
 
+    /***********************************************************
+     * DRAFT TERM SYSTEM FOR RAPID EDIT DATA-LOSS PREVENTION
+     * When editing begins, a clone of the term is made into draftTerm.
+     * Before tab switches or additions/deletions, active DOM inputs are
+     * serialized into draftTerm using updateDraftFromDOM().
+     * On Save, draftTerm is written back to the original database term.
+     * On Cancel, draftTerm is discarded without modifying the DB.
+     ***********************************************************/
+
     function toggleEdit(on) {
       isEditing = !!on;
+      if (isEditing) {
+        // Deep clone original term to draftTerm
+        const original = getSelected();
+        draftTerm = original ? JSON.parse(JSON.stringify(original)) : null;
+      } else {
+        draftTerm = null;
+      }
+
       $("#readView").classList.toggle("hidden", isEditing);
       $("#editView").classList.toggle("hidden", !isEditing);
       $("#btnEdit").textContent = isEditing ? "Ver" : "Editar";
@@ -1566,17 +1732,15 @@
       }
     }
 
-    function commitEdits() {
-      const term = getSelected();
-      if (!term) return;
+    function updateDraftFromDOM() {
+      if (!draftTerm) return;
 
-      // Helper to read if exists
       const val = (id) => {
         const el = document.getElementById(id);
         return el ? el.value : null;
       };
 
-      // Resumen
+      // 1. Resumen Tab Fields
       const lema = val("e_lema");
       const lemaLang = val("e_lema_lang");
       const pos = val("e_pos");
@@ -1586,140 +1750,198 @@
       const expl = val("e_expl");
       const tags = val("e_tags");
 
-      if (lema !== null) term.lema_principal = lema.trim();
-      if (lemaLang !== null) term.lema_idioma = (lemaLang || "ast");
-      if (pos !== null) term.categoria_gramatical = pos;
-      if (dominios !== null) term.dominios = asArrayFromCommaList(dominios).map(d => d);
-      if (def !== null) term.definicion_tecnica = def.trim();
-      if (etim !== null) term.etimologia = etim.trim();
-      if (expl !== null) term.explicacion = expl.trim();
-      if (tags !== null) term.tags = asArrayFromCommaList(tags);
+      if (lema !== null) draftTerm.lema_principal = lema.trim();
+      if (lemaLang !== null) draftTerm.lema_idioma = lemaLang || "ast";
+      if (pos !== null) draftTerm.categoria_gramatical = pos;
+      if (dominios !== null) draftTerm.dominios = asArrayFromCommaList(dominios);
+      if (def !== null) draftTerm.definicion_tecnica = def.trim();
+      if (etim !== null) draftTerm.etimologia = etim.trim();
+      if (expl !== null) draftTerm.explicacion = expl.trim();
+      if (tags !== null) draftTerm.tags = asArrayFromCommaList(tags);
 
-      // Equivalentes
-      const eqKeys = ["ast","es","en","de"];
+      // 2. Equivalentes Tab Fields
+      const eqKeys = ["ast", "es", "en", "de"];
       for (const k of eqKeys) {
         const raw = val(`e_eq_${k}`);
-        if (raw !== null) term.equivalentes[k] = asArrayFromCommaList(raw);
+        if (raw !== null) {
+          draftTerm.equivalentes[k] = asArrayFromCommaList(raw);
+        }
       }
 
-      // Ejemplos generales
+      // 3. Ejemplos Tab Fields (General)
       if ($("#examplesWrap")) {
-        const examples = [];
         const wrap = $("#examplesWrap");
         const cards = $$("[data-ex]", wrap);
+        const examples = [];
         for (const card of cards) {
           const i = Number(card.getAttribute("data-ex"));
-          const texto = val(`e_ex_text_${i}`) ?? "";
-          const fuente = val(`e_ex_src_${i}`) ?? "";
-          const nota  = val(`e_ex_note_${i}`) ?? "";
-          if ((texto || "").trim()) {
-            examples.push({ texto: texto.trim(), fuente: fuente.trim(), nota: nota.trim() });
+          const texto = val(`e_ex_text_${i}`);
+          const fuente = val(`e_ex_src_${i}`);
+          const nota = val(`e_ex_note_${i}`);
+          if (texto !== null) {
+            examples.push({
+              texto: (texto || "").trim(),
+              fuente: (fuente || "").trim(),
+              nota: (nota || "").trim()
+            });
           }
         }
-        term.ejemplos = examples;
+        draftTerm.ejemplos = examples;
       }
 
-      // Variantes
+      // 4. Variantes & Polisemia Tab Fields
       if ($("#variantsWrap")) {
-        const vars = [];
         const cards = $$("[data-variant]", $("#variantsWrap"));
+        const vars = [];
         for (const c of cards) {
           const i = Number(c.getAttribute("data-variant"));
-          const tipo = (val(`e_var_tipo_${i}`) ?? "").trim();
-          const forma = (val(`e_var_forma_${i}`) ?? "").trim();
-          const nota  = (val(`e_var_nota_${i}`) ?? "").trim();
-          if (forma) vars.push({ tipo, forma, nota });
+          const tipo = val(`e_var_tipo_${i}`);
+          const forma = val(`e_var_forma_${i}`);
+          const nota = val(`e_var_note_${i}`);
+          if (forma !== null) {
+            vars.push({
+              tipo: (tipo || "").trim(),
+              forma: (forma || "").trim(),
+              nota: (nota || "").trim()
+            });
+          }
         }
-        term.variantes = vars;
+        draftTerm.variantes = vars;
       }
 
-      // Polisemia
       if ($("#polyWrap")) {
-        const polys = [];
         const cards = $$("[data-poly]", $("#polyWrap"));
+        const polys = [];
         for (const c of cards) {
           const i = Number(c.getAttribute("data-poly"));
-          const acep = (val(`e_poly_num_${i}`) ?? String(i+1)).trim();
-          const doms = asArrayFromCommaList(val(`e_poly_dom_${i}`) ?? "");
-          const note = (val(`e_poly_note_${i}`) ?? "").trim();
-          const pdef = (val(`e_poly_def_${i}`) ?? "").trim();
+          const acep = val(`e_poly_num_${i}`);
+          const doms = val(`e_poly_dom_${i}`);
+          const note = val(`e_poly_note_${i}`);
+          const pdef = val(`e_poly_def_${i}`);
 
-          // Ejemplos por acepción
-          const exs = [];
-          // Scan possible indices by looking at inputs that match prefix
-          const exWrap = document.getElementById(`poly_ex_wrap_${i}`);
-          if (exWrap) {
-            const textInputs = $$(`input[id^="e_poly_ex_text_${i}_"]`, exWrap);
-            for (const ti of textInputs) {
-              const parts = ti.id.split("_");
-              const j = Number(parts[parts.length - 1]);
-              const texto = (val(`e_poly_ex_text_${i}_${j}`) ?? "").trim();
-              const fuente = (val(`e_poly_ex_src_${i}_${j}`) ?? "").trim();
-              const nota = (val(`e_poly_ex_note_${i}_${j}`) ?? "").trim();
-              if (texto) exs.push({ texto, fuente, nota });
+          if (acep !== null || pdef !== null) {
+            const exs = [];
+            const exWrap = document.getElementById(`poly_ex_wrap_${i}`);
+            if (exWrap) {
+              const textInputs = $$(`input[id^="e_poly_ex_text_${i}_"]`, exWrap);
+              for (const ti of textInputs) {
+                const parts = ti.id.split("_");
+                const j = Number(parts[parts.length - 1]);
+                const texto = val(`e_poly_ex_text_${i}_${j}`);
+                const fuente = val(`e_poly_ex_src_${i}_${j}`);
+                const nota = val(`e_poly_ex_note_${i}_${j}`);
+                if (texto !== null) {
+                  exs.push({
+                    texto: (texto || "").trim(),
+                    fuente: (fuente || "").trim(),
+                    nota: (nota || "").trim()
+                  });
+                }
+              }
             }
+            polys.push({
+              acepcion: (acep || "").trim() || String(i + 1),
+              definicion: (pdef || "").trim(),
+              dominios: asArrayFromCommaList(doms || ""),
+              nota: (note || "").trim(),
+              ejemplos: exs
+            });
           }
-
-          // Keep acepción even if partial (linguistic work-in-progress is common)
-          polys.push({ acepcion: acep, definicion: pdef, dominios: doms, nota: note, ejemplos: exs });
         }
-        term.polisemia = polys;
+        draftTerm.polisemia = polys;
       }
 
-      // Imágenes
+      // 5. Imagenes Tab Fields
       if ($("#imgsWrap")) {
-        const imgs = [];
-        const cards = $$("#imgsWrap > div");
-        // We cannot reliably know original indexes if user removed; rely on input ids.
-        // We'll parse ids by scanning e_img_note_ / e_img_url_
-        // For base64 images we store as is; URLs come from inputs.
         const urlInputs = $$(`input[id^="e_img_url_"]`, $("#imgsWrap"));
-        // Build by index detected
         const idxs = new Set(urlInputs.map(i => Number(i.id.split("_").pop())));
-        // Also include note inputs
         $$(`input[id^="e_img_note_"]`, $("#imgsWrap")).forEach(i => idxs.add(Number(i.id.split("_").pop())));
         const sorted = Array.from(idxs).filter(n => !Number.isNaN(n)).sort((a,b)=>a-b);
-
+        const imgs = [];
         for (const i of sorted) {
-          const url = (val(`e_img_url_${i}`) ?? "").trim();
-          const note = (val(`e_img_note_${i}`) ?? "").trim();
-          const original = (term.imagenes || [])[i];
+          const url = val(`e_img_url_${i}`);
+          const note = val(`e_img_note_${i}`);
+          const original = (draftTerm.imagenes || [])[i];
 
           if (original && original.tipo === "base64") {
-            // base64 image: url field unused; keep original src
-            imgs.push({ tipo: "base64", src: original.src, nota: note || original.nota || "" });
-          } else if (url) {
-            imgs.push({ tipo: "url", src: url, nota: note });
+            imgs.push({
+              tipo: "base64",
+              src: original.src,
+              nota: (note !== null ? note.trim() : (original.nota || ""))
+            });
+          } else if (url !== null) {
+            imgs.push({
+              tipo: "url",
+              src: url.trim(),
+              nota: (note || "").trim()
+            });
           }
         }
-        term.imagenes = imgs;
+        draftTerm.imagenes = imgs;
       }
 
-      // Referencias normalizadas
+      // 6. Referencias Tab Fields
       if ($("#refsWrap")) {
-        const refs = [];
-        const cards = $$("#refsWrap > div");
-        // Determine indices via inputs
         const idxs = new Set();
         $$(`input[id^="e_ref_aut_"]`, $("#refsWrap")).forEach(i => idxs.add(Number(i.id.split("_").pop())));
         const sorted = Array.from(idxs).filter(n => !Number.isNaN(n)).sort((a,b)=>a-b);
+        const refs = [];
         for (const i of sorted) {
-          const autor = (val(`e_ref_aut_${i}`) ?? "").trim();
-          const anio  = (val(`e_ref_year_${i}`) ?? "").trim();
-          const titulo= (val(`e_ref_title_${i}`) ?? "").trim();
-          const fuente= (val(`e_ref_src_${i}`) ?? "").trim();
-          const doi   = (val(`e_ref_doi_${i}`) ?? "").trim();
-          const url   = (val(`e_ref_url_${i}`) ?? "").trim();
-          // Consider reference valid if at least author+title or title present
-          if (autor || titulo || url || doi) {
-            refs.push({ autor, anio, titulo, fuente, doi, url });
+          const autor = val(`e_ref_aut_${i}`);
+          const anio = val(`e_ref_year_${i}`);
+          const titulo = val(`e_ref_title_${i}`);
+          const fuente = val(`e_ref_src_${i}`);
+          const doi = val(`e_ref_doi_${i}`);
+          const url = val(`e_ref_url_${i}`);
+
+          if (autor !== null || titulo !== null || url !== null) {
+            refs.push({
+              autor: (autor || "").trim(),
+              anio: (anio || "").trim(),
+              titulo: (titulo || "").trim(),
+              fuente: (fuente || "").trim(),
+              doi: (doi || "").trim(),
+              url: (url || "").trim()
+            });
           }
         }
-        term.referencias_bibliograficas = refs;
+        draftTerm.referencias_bibliograficas = refs;
+      }
+    }
+
+    function commitEdits() {
+      const term = getSelected();
+      if (!term || !draftTerm) return;
+
+      // 1. Serialize active DOM elements to draftTerm
+      updateDraftFromDOM();
+
+      // 2. Filter empty entries from dynamic lists
+      if (draftTerm.variantes) {
+        draftTerm.variantes = draftTerm.variantes.filter(v => v.forma.trim());
+      }
+      if (draftTerm.ejemplos) {
+        draftTerm.ejemplos = draftTerm.ejemplos.filter(e => e.texto.trim());
+      }
+      if (draftTerm.imagenes) {
+        draftTerm.imagenes = draftTerm.imagenes.filter(im => im.tipo === "base64" || im.src.trim());
+      }
+      if (draftTerm.referencias_bibliograficas) {
+        draftTerm.referencias_bibliograficas = draftTerm.referencias_bibliograficas.filter(r => r.autor.trim() || r.titulo.trim() || r.url.trim() || r.doi.trim());
+      }
+      if (draftTerm.polisemia) {
+        draftTerm.polisemia = draftTerm.polisemia.map(p => {
+          if (p.ejemplos) {
+            p.ejemplos = p.ejemplos.filter(e => e.texto.trim());
+          }
+          return p;
+        });
       }
 
-      // Basic sanity
-      if (!term.lema_principal.trim()) term.lema_principal = "(sin lema)";
+      if (!draftTerm.lema_principal.trim()) draftTerm.lema_principal = "(sin lema)";
+
+      // 3. Write back to DB terms array
+      Object.assign(term, JSON.parse(JSON.stringify(draftTerm)));
 
       saveDB();
       populatePOS();
@@ -1955,6 +2177,11 @@
       createTermFromNewForm();
     });
 
+    // About modal
+    $("#btnAbout").addEventListener("click", () => {
+      openModal("modalAbout");
+    });
+
     // Corpus modal
     $("#btnCorpus").addEventListener("click", () => {
       $("#importText").value = "";
@@ -2073,7 +2300,7 @@
     document.addEventListener("keydown", (e) => {
       // Escape closes any open modal
       if (e.key === "Escape") {
-        ["modalNew","modalCorpus"].forEach(id => {
+        ["modalNew","modalCorpus","modalAbout"].forEach(id => {
           const m = document.getElementById(id);
           if (m && !m.classList.contains("hidden")) closeModal(id);
         });
@@ -2107,8 +2334,12 @@
 
     // Event delegation for buttons inside editView (tabs)
     $("#editView").addEventListener("click", (e) => {
-      const term = getSelected();
-      if (!term) return;
+      if (!isEditing || !draftTerm) return;
+
+      // Sync active DOM input values into draftTerm before mutating array structures
+      updateDraftFromDOM();
+
+      const term = draftTerm;
 
       // Variants
       if (e.target.closest("#btnAddVariant")) {
@@ -2239,19 +2470,26 @@
       const input = e.target;
       if (!input || input.id !== "imgUpload") return;
 
-      const term = getSelected();
-      if (!term) return;
+      if (!isEditing || !draftTerm) return;
+      updateDraftFromDOM(); // Sync DOM data first
 
       const file = input.files && input.files[0];
       if (!file) return;
 
+      // Warn if base64 file is large to avoid LocalStorage limits
+      if (file.size > 400 * 1024) {
+        if (!confirm("Esta imagen pesa " + Math.round(file.size / 1024) + "KB. Subir imágenes pesadas (>400KB) puede sobrepasar el límite de almacenamiento del navegador (5MB) y causar fallos. ¿Deseas continuar?")) {
+          input.value = "";
+          return;
+        }
+      }
+
       const reader = new FileReader();
       reader.onload = () => {
-        term.imagenes = Array.isArray(term.imagenes) ? term.imagenes : [];
-        term.imagenes.push({ tipo: "base64", src: String(reader.result || ""), nota: file.name || "Subida" });
+        draftTerm.imagenes = Array.isArray(draftTerm.imagenes) ? draftTerm.imagenes : [];
+        draftTerm.imagenes.push({ tipo: "base64", src: String(reader.result || ""), nota: file.name || "Subida" });
         renderDetail();
         toast("Imagen subida.");
-        // reset so same file can be re-uploaded if needed
         input.value = "";
       };
       reader.onerror = () => {
@@ -2281,6 +2519,599 @@
     }
 
   </script>
+
+  <script>
+    (function(){
+      const UI_LANG_KEY = "pomonIa_ui_lang_v2";
+      const UI = {
+        en: {
+          "Saltar al contenido principal": "Skip to main content",
+          "Idioma de la interfaz": "Interface language",
+          "Gestión terminográfica · Llagar · Manzana · Léxico geopónico": "Terminographic management · Cider press · Apple · Geoponic lexicon",
+          "Nuevo lema": "New entry",
+          "Corpus": "Corpus",
+          "Reset": "Reset",
+          "Categorías temáticas": "Thematic categories",
+          "Filtra por dominio terminológico.": "Filter by terminological domain.",
+          "Todas": "All",
+          "Partes del llagar": "Cider press parts",
+          "Piezas o herramientas": "Parts or tools",
+          "Léxico geopónico": "Geoponic lexicon",
+          "Variedades de manzana": "Apple varieties",
+          "Proceso de elaboración": "Production process",
+          "Búsqueda y filtros": "Search and filters",
+          "Búsqueda global": "Global search",
+          "Buscar por lema, definición, equivalentes, notas…": "Search by lemma, definition, equivalents, notes…",
+          "Cat. gramatical": "Part of speech",
+          "Idioma (equivalentes)": "Language (equivalents)",
+          "Cualquiera": "Any",
+          "Asturiano": "Asturian",
+          "Español": "Spanish",
+          "Inglés": "English",
+          "Alemán": "German",
+          "Idioma (lema)": "Language (lemma)",
+          "Solo con imágenes": "Only with images",
+          "Solo con referencias": "Only with references",
+          "Solo fichas incompletas": "Only incomplete records",
+          "Limpiar filtros": "Clear filters",
+          "Control de calidad": "Quality control",
+          "Una ficha se marca como incompleta si falta: ": "A record is marked incomplete if it lacks: ",
+          "definición": "definition",
+          "algún equivalente": "at least one equivalent",
+          "ejemplos": "examples",
+          "referencias": "references",
+          "Lemas": "Entries",
+          "Selecciona un lema para ver su ficha.": "Select an entry to view its record.",
+          "Orden: ": "Order: ",
+          "Tip: ": "Tip: ",
+          "crea un lema · ": "creates a new entry · ",
+          "elimina el lema seleccionado.": "deletes the selected entry.",
+          "Ficha terminológica": "Terminological record",
+          "Selecciona un lema para ver la información.": "Select an entry to view the information.",
+          "Editar": "Edit",
+          "Eliminar": "Delete",
+          "Secciones": "Sections",
+          "Resumen": "Summary",
+          "Equivalentes": "Equivalents",
+          "Variantes & polisemia": "Variants & polysemy",
+          "Ejemplos & fuentes": "Examples & sources",
+          "Imágenes": "Images",
+          "Referencias": "References",
+          "Aquí verás la ficha del lema seleccionado. Puedes editarla con el botón ": "Here you will see the selected entry record. You can edit it with the ",
+          "Refinamiento y ampliación": "Refinement and extension",
+          "Usa ": "Use ",
+          " para importar/exportar JSON, ampliar el corpus, y registrar vínculos con lenguas y patrimonio cultural.": " to import/export JSON, expand the corpus, and record links with languages and cultural heritage.",
+          "Nuevo lema": "New entry",
+          "Crea una entrada terminológica y guárdala en tu corpus local.": "Create a terminological entry and save it in your local corpus.",
+          "Cerrar": "Close",
+          "Lema principal *": "Main lemma *",
+          "Categoría gramatical *": "Part of speech *",
+          "Seleccionar…": "Select…",
+          "Sustantivo": "Noun",
+          "Verbo": "Verb",
+          "Adjetivo": "Adjective",
+          "Adverbio": "Adverb",
+          "Locución": "Phrase",
+          "Otro": "Other",
+          "Idioma del lema (entrada) *": "Lemma language (entry) *",
+          "Dominios (separa por coma) *": "Domains (comma-separated) *",
+          "Ej.: Proceso de elaboración, Partes del llagar": "E.g.: Production process, Cider press parts",
+          "Definición técnica *": "Technical definition *",
+          "Etimología": "Etymology",
+          "Consejo: puedes completar equivalentes, variantes, polisemia, ejemplos, imágenes y referencias una vez creado el lema.": "Tip: you can complete equivalents, variants, polysemy, examples, images and references once the entry is created.",
+          "Cancelar": "Cancel",
+          "Crear": "Create",
+          "Corpus · Importación / Exportación": "Corpus · Import / Export",
+          "Amplía el corpus, respalda tu trabajo y registra vínculos culturales.": "Expand the corpus, back up your work and record cultural links.",
+          "Exportar": "Export",
+          "Descarga tu base de datos en JSON.": "Download your database as JSON.",
+          "Descargar JSON": "Download JSON",
+          "Notas de patrimonio y lazos lingüísticos": "Heritage notes and linguistic links",
+          "Un campo libre para registrar vínculos con otras lenguas, usos tradicionales o variación diacrónica.": "A free field to record links with other languages, traditional uses or diachronic variation.",
+          "Ej.: Conexiones con léxico gallego-portugués; uso tradicional en X; variantes diacrónicas…": "E.g.: Links with Galician-Portuguese lexicon; traditional use in X; diachronic variants…",
+          "Guardar notas": "Save notes",
+          "Importar": "Import",
+          "Importa un JSON para ampliar el corpus. Puedes ": "Import a JSON file to expand the corpus. You can ",
+          "reemplazar": "replace",
+          " o ": " or ",
+          "fusionar": "merge",
+          "Reemplazar": "Replace",
+          "Fusionar (por id)": "Merge (by id)",
+          "Importar desde archivo": "Import from file",
+          "O pegar JSON": "Or paste JSON",
+          "Validar JSON": "Validate JSON",
+          "Calidad": "Quality",
+          "Sin referencias.": "No references.",
+          "Sin ejemplos.": "No examples.",
+          "Sin imágenes.": "No images.",
+          "Sin variantes.": "No variants.",
+          "Sin acepciones registradas.": "No senses recorded.",
+          "Definición técnica": "Technical definition",
+          "Explicación": "Explanation",
+          "Variantes": "Variants",
+          "Polisemia (acepciones)": "Polysemy (senses)",
+          "Fuente no indicada": "Source not indicated",
+          "Ejemplo general": "General example",
+          "Acepción": "Sense",
+          "Año": "Year",
+          "Título": "Title",
+          "Autor": "Author",
+          "Fuente": "Source",
+          "Nota": "Note",
+          "URL (si aplica)": "URL (if applicable)",
+          "Nota / pie de imagen": "Caption / image note",
+          "Cambios guardados.": "Changes saved.",
+          "Lema creado.": "Entry created.",
+          "Lema eliminado.": "Entry deleted.",
+          "Lema duplicado.": "Entry duplicated.",
+          "No hay 'terms'.": "There are no 'terms'.",
+          "JSON inválido: ": "Invalid JSON: ",
+          "Importación completada.": "Import completed.",
+          "Filtros limpiados.": "Filters cleared.",
+          "Edición cancelada.": "Editing canceled.",
+          "Notas guardadas.": "Notes saved.",
+          "Corpus exportado.": "Corpus exported.",
+          "Pega JSON o selecciona un archivo primero.": "Paste JSON or select a file first.",
+          "No se pudo leer el archivo.": "The file could not be read.",
+          "Pega JSON o selecciona un archivo para importar.": "Paste JSON or select a file to import.",
+          "Esto reemplazará el corpus actual. ¿Continuar?": "This will replace the current corpus. Continue?",
+          "Esto fusionará por id (los ids coincidentes se sobrescriben). ¿Continuar?": "This will merge by id (matching ids will be overwritten). Continue?",
+          "Restablecido.": "Reset completed.",
+          "Imagen subida.": "Image uploaded.",
+          "Error al subir la imagen.": "Error uploading the image.",
+          "No hay resultados con los filtros actuales.": "No results match the current filters.",
+          "(sin lema)": "(untitled)",
+          "✓ Completa": "✓ Complete",
+          "⚠ Incompleta": "⚠ Incomplete",
+          "✓ Ficha completa (definición, equivalentes, ejemplos y referencias presentes).": "✓ Complete record (definition, equivalents, examples and references present).",
+          "Aquí verás la ficha del lema seleccionado.": "Here you will see the selected entry record.",
+          "modo edición": "editing mode",
+          "Estás en ": "You are in ",
+          ". Guarda para aplicar cambios.": ". Save to apply changes.",
+          "Duplicar": "Duplicate",
+          "Guardar": "Save",
+          "Modo edición": "Editing mode",
+          "Ordenar A↔Z": "Sort A↔Z",
+          "Crear lema (Ctrl+N)": "Create entry (Ctrl+N)",
+          "Importar/Exportar · Corpus": "Import/Export · Corpus",
+          "Restablecer datos (mantiene copia en descarga)": "Reset data (keeps backup download)",
+          "No hay resultados con los filtros actuales.": "No results with the current filters.",
+          "Resultado(s)": "result(s)",
+          "Plataforma Terminográfica Multilingüe": "Multilingual Terminographical Platform",
+          "Cultura de la Sidra, Manzana y Patrimonio": "Cider Culture, Apple & Heritage",
+          "Plataforma Terminográfica Multilingüe para la Cultura de la Sidra y la Terminología de la Manzana": "Multilingual Terminographical Platform for Cider Culture and Apple-Related Terminology",
+          "Universidad de Oviedo": "University of Oviedo",
+          "Grupo de Investigación TradDisc": "Research Group TradDisc",
+          "Universidad de Oviedo · Grupo de Investigación TradDisc": "University of Oviedo · Research Group TradDisc",
+          "Acerca de": "About",
+          "Sobre el proyecto": "About the project"
+        },
+        de: {
+          "Saltar al contenido principal": "Zum Hauptinhalt springen",
+          "Idioma de la interfaz": "Sprache der Benutzeroberfläche",
+          "Gestión terminográfica · Llagar · Manzana · Léxico geopónico": "Terminographisches Management · Kelter · Apfel · geoponisches Lexikon",
+          "Nuevo lema": "Neuer Eintrag",
+          "Corpus": "Korpus",
+          "Reset": "Zurücksetzen",
+          "Categorías temáticas": "Thematische Kategorien",
+          "Filtra por dominio terminológico.": "Nach terminologischem Bereich filtern.",
+          "Todas": "Alle",
+          "Partes del llagar": "Teile der Kelter",
+          "Piezas o herramientas": "Teile oder Werkzeuge",
+          "Léxico geopónico": "Geoponisches Lexikon",
+          "Variedades de manzana": "Apfelsorten",
+          "Proceso de elaboración": "Herstellungsprozess",
+          "Búsqueda y filtros": "Suche und Filter",
+          "Búsqueda global": "Globale Suche",
+          "Buscar por lema, definición, equivalentes, notas…": "Nach Lemma, Definition, Äquivalenten, Notizen suchen…",
+          "Cat. gramatical": "Wortart",
+          "Idioma (equivalentes)": "Sprache (Äquivalente)",
+          "Cualquiera": "Beliebig",
+          "Asturiano": "Asturisch",
+          "Español": "Spanisch",
+          "Inglés": "Englisch",
+          "Alemán": "Deutsch",
+          "Idioma (lema)": "Sprache (Lemma)",
+          "Solo con imágenes": "Nur mit Bildern",
+          "Solo con referencias": "Nur mit Quellen",
+          "Solo fichas incompletas": "Nur unvollständige Einträge",
+          "Limpiar filtros": "Filter löschen",
+          "Control de calidad": "Qualitätskontrolle",
+          "definición": "Definition",
+          "algún equivalente": "mindestens ein Äquivalent",
+          "ejemplos": "Beispiele",
+          "referencias": "Quellen",
+          "Lemas": "Einträge",
+          "Selecciona un lema para ver su ficha.": "Wählen Sie einen Eintrag aus, um den Datensatz zu sehen.",
+          "Orden: ": "Sortierung: ",
+          "Ficha terminológica": "Terminologischer Datensatz",
+          "Selecciona un lema para ver la información.": "Wählen Sie einen Eintrag aus, um die Informationen zu sehen.",
+          "Editar": "Bearbeiten",
+          "Eliminar": "Löschen",
+          "Secciones": "Abschnitte",
+          "Resumen": "Übersicht",
+          "Equivalentes": "Äquivalente",
+          "Variantes & polisemia": "Varianten & Polysemie",
+          "Ejemplos & fuentes": "Beispiele & Quellen",
+          "Imágenes": "Bilder",
+          "Referencias": "Quellenangaben",
+          "Aquí verás la ficha del lema seleccionado.": "Hier sehen Sie den Datensatz des ausgewählten Eintrags.",
+          "Refinamiento y ampliación": "Verfeinerung und Erweiterung",
+          "Crea una entrada terminológica y guárdala en tu corpus local.": "Erstellen Sie einen terminologischen Eintrag und speichern Sie ihn in Ihrem lokalen Korpus.",
+          "Cerrar": "Schließen",
+          "Lema principal *": "Hauptlemma *",
+          "Categoría gramatical *": "Wortart *",
+          "Seleccionar…": "Auswählen…",
+          "Sustantivo": "Substantiv",
+          "Verbo": "Verb",
+          "Adjetivo": "Adjektiv",
+          "Adverbio": "Adverb",
+          "Locución": "Redewendung",
+          "Otro": "Andere",
+          "Idioma del lema (entrada) *": "Sprache des Lemmas (Eintrag) *",
+          "Dominios (separa por coma) *": "Bereiche (durch Komma getrennt) *",
+          "Ej.: Proceso de elaboración, Partes del llagar": "Z. B.: Herstellungsprozess, Teile der Kelter",
+          "Definición técnica *": "Technische Definition *",
+          "Etimología": "Etymologie",
+          "Consejo: puedes completar equivalentes, variantes, polisemia, ejemplos, imágenes y referencias una vez creado el lema.": "Tipp: Sie können Äquivalente, Varianten, Polysemie, Beispiele, Bilder und Quellen ergänzen, sobald der Eintrag erstellt wurde.",
+          "Cancelar": "Abbrechen",
+          "Crear": "Erstellen",
+          "Corpus · Importación / Exportación": "Korpus · Import / Export",
+          "Amplía el corpus, respalda tu trabajo y registra vínculos culturales.": "Erweitern Sie das Korpus, sichern Sie Ihre Arbeit und dokumentieren Sie kulturelle Verbindungen.",
+          "Exportar": "Exportieren",
+          "Descarga tu base de datos en JSON.": "Laden Sie Ihre Datenbank als JSON herunter.",
+          "Descargar JSON": "JSON herunterladen",
+          "Guardar notas": "Notizen speichern",
+          "Importar": "Importieren",
+          "Reemplazar": "Ersetzen",
+          "Fusionar (por id)": "Zusammenführen (nach ID)",
+          "Importar desde archivo": "Aus Datei importieren",
+          "O pegar JSON": "Oder JSON einfügen",
+          "Validar JSON": "JSON prüfen",
+          "Sin referencias.": "Keine Quellen.",
+          "Sin ejemplos.": "Keine Beispiele.",
+          "Sin imágenes.": "Keine Bilder.",
+          "Sin variantes.": "Keine Varianten.",
+          "Sin acepciones registradas.": "Keine Bedeutungen erfasst.",
+          "Definición técnica": "Technische Definition",
+          "Explicación": "Erläuterung",
+          "Variantes": "Varianten",
+          "Polisemia (acepciones)": "Polysemie (Bedeutungen)",
+          "Fuente no indicada": "Quelle nicht angegeben",
+          "Ejemplo general": "Allgemeines Beispiel",
+          "Acepción": "Bedeutung",
+          "Año": "Jahr",
+          "Título": "Titel",
+          "Autor": "Autor",
+          "Fuente": "Quelle",
+          "Nota": "Anmerkung",
+          "URL (si aplica)": "URL (falls zutreffend)",
+          "Nota / pie de imagen": "Bildunterschrift / Notiz",
+          "Cambios guardados.": "Änderungen gespeichert.",
+          "Lema creado.": "Eintrag erstellt.",
+          "Lema eliminado.": "Eintrag gelöscht.",
+          "Lema duplicado.": "Eintrag dupliziert.",
+          "No hay 'terms'.": "Es gibt keine 'terms'.",
+          "JSON inválido: ": "Ungültiges JSON: ",
+          "Importación completada.": "Import abgeschlossen.",
+          "Filtros limpiados.": "Filter gelöscht.",
+          "Edición cancelada.": "Bearbeitung abgebrochen.",
+          "Notas guardadas.": "Notizen gespeichert.",
+          "Corpus exportado.": "Korpus exportiert.",
+          "Pega JSON o selecciona un archivo primero.": "Fügen Sie zuerst JSON ein oder wählen Sie eine Datei.",
+          "No se pudo leer el archivo.": "Die Datei konnte nicht gelesen werden.",
+          "Pega JSON o selecciona un archivo para importar.": "Fügen Sie JSON ein oder wählen Sie eine Datei zum Importieren.",
+          "Esto reemplazará el corpus actual. ¿Continuar?": "Dies ersetzt das aktuelle Korpus. Fortfahren?",
+          "Esto fusionará por id (los ids coincidentes se sobrescriben). ¿Continuar?": "Dies führt nach ID zusammen (gleiche IDs werden überschrieben). Fortfahren?",
+          "Restablecido.": "Zurückgesetzt.",
+          "Imagen subida.": "Bild hochgeladen.",
+          "Error al subir la imagen.": "Fehler beim Hochladen des Bildes.",
+          "No hay resultados con los filtros actuales.": "Keine Ergebnisse für die aktuellen Filter.",
+          "(sin lema)": "(ohne Lemma)",
+          "✓ Completa": "✓ Vollständig",
+          "⚠ Incompleta": "⚠ Unvollständig",
+          "✓ Ficha completa (definición, equivalentes, ejemplos y referencias presentes).": "✓ Vollständiger Datensatz (Definition, Äquivalente, Beispiele und Quellen vorhanden).",
+          "modo edición": "Bearbeitungsmodus",
+          "Duplicar": "Duplizieren",
+          "Guardar": "Speichern",
+          "Ordenar A↔Z": "A↔Z sortieren",
+          "Crear lema (Ctrl+N)": "Eintrag erstellen (Ctrl+N)",
+          "Importar/Exportar · Corpus": "Import/Export · Korpus",
+          "Restablecer datos (mantiene copia en descarga)": "Daten zurücksetzen (Sicherung wird heruntergeladen)",
+          "Plataforma Terminográfica Multilingüe": "Mehrsprachige terminologische Plattform",
+          "Cultura de la Sidra, Manzana y Patrimonio": "Kelterkultur, Apfel- und Kulturerbe-Terminologie",
+          "Plataforma Terminográfica Multilingüe para la Cultura de la Sidra y la Terminología de la Manzana": "Mehrsprachige terminologische Plattform für Kelterkultur und Apfel-Terminologie",
+          "Universidad de Oviedo": "Universität Oviedo",
+          "Grupo de Investigación TradDisc": "Forschungsgruppe TradDisc",
+          "Universidad de Oviedo · Grupo de Investigación TradDisc": "Universität Oviedo · Forschungsgruppe TradDisc",
+          "Acerca de": "Über",
+          "Sobre el proyecto": "Über das Projekt"
+        },
+        fr: {
+          "Saltar al contenido principal": "Aller au contenu principal",
+          "Idioma de la interfaz": "Langue de l’interface",
+          "Gestión terminográfica · Llagar · Manzana · Léxico geopónico": "Gestion terminographique · pressoir · pomme · lexique géoponique",
+          "Nuevo lema": "Nouvelle entrée",
+          "Corpus": "Corpus",
+          "Reset": "Réinitialiser",
+          "Categorías temáticas": "Catégories thématiques",
+          "Filtra por dominio terminológico.": "Filtrer par domaine terminologique.",
+          "Todas": "Toutes",
+          "Partes del llagar": "Parties du pressoir",
+          "Piezas o herramientas": "Pièces ou outils",
+          "Léxico geopónico": "Lexique géoponique",
+          "Variedades de manzana": "Variétés de pomme",
+          "Proceso de elaboración": "Processus de production",
+          "Búsqueda y filtros": "Recherche et filtres",
+          "Búsqueda global": "Recherche globale",
+          "Buscar por lema, definición, equivalentes, notas…": "Rechercher par lemme, définition, équivalents, notes…",
+          "Cat. gramatical": "Catégorie grammaticale",
+          "Idioma (equivalentes)": "Langue (équivalents)",
+          "Cualquiera": "N’importe laquelle",
+          "Asturiano": "Asturien",
+          "Español": "Espagnol",
+          "Inglés": "Anglais",
+          "Alemán": "Allemand",
+          "Idioma (lema)": "Langue (lemme)",
+          "Solo con imágenes": "Seulement avec images",
+          "Solo con referencias": "Seulement avec références",
+          "Solo fichas incompletas": "Seulement les fiches incomplètes",
+          "Limpiar filtros": "Effacer les filtres",
+          "Control de calidad": "Contrôle de qualité",
+          "definición": "définition",
+          "algún equivalente": "au moins un équivalent",
+          "ejemplos": "exemples",
+          "referencias": "références",
+          "Lemas": "Entrées",
+          "Selecciona un lema para ver su ficha.": "Sélectionnez une entrée pour voir sa fiche.",
+          "Orden: ": "Ordre : ",
+          "Ficha terminológica": "Fiche terminologique",
+          "Selecciona un lema para ver la información.": "Sélectionnez une entrée pour voir les informations.",
+          "Editar": "Modifier",
+          "Eliminar": "Supprimer",
+          "Secciones": "Sections",
+          "Resumen": "Résumé",
+          "Equivalentes": "Équivalents",
+          "Variantes & polisemia": "Variantes & polysémie",
+          "Ejemplos & fuentes": "Exemples & sources",
+          "Imágenes": "Images",
+          "Referencias": "Références",
+          "Aquí verás la ficha del lema seleccionado.": "Vous verrez ici la fiche de l’entrée sélectionnée.",
+          "Refinamiento y ampliación": "Affinement et extension",
+          "Crea una entrada terminológica y guárdala en tu corpus local.": "Créez une entrée terminologique et enregistrez-la dans votre corpus local.",
+          "Cerrar": "Fermer",
+          "Lema principal *": "Lemme principal *",
+          "Categoría gramatical *": "Catégorie grammaticale *",
+          "Seleccionar…": "Sélectionner…",
+          "Sustantivo": "Nom",
+          "Verbo": "Verbe",
+          "Adjetivo": "Adjectif",
+          "Adverbio": "Adverbe",
+          "Locución": "Locution",
+          "Otro": "Autre",
+          "Idioma del lema (entrada) *": "Langue du lemme (entrée) *",
+          "Dominios (separa por coma) *": "Domaines (séparés par des virgules) *",
+          "Ej.: Proceso de elaboración, Partes del llagar": "Ex. : Processus de production, Parties du pressoir",
+          "Definición técnica *": "Définition technique *",
+          "Etimología": "Étymologie",
+          "Consejo: puedes completar equivalentes, variantes, polisemia, ejemplos, imágenes y referencias una vez creado el lema.": "Conseil : vous pouvez compléter les équivalents, variantes, polysémie, exemples, images et références une fois l’entrée créée.",
+          "Cancelar": "Annuler",
+          "Crear": "Créer",
+          "Corpus · Importación / Exportación": "Corpus · Import / Export",
+          "Amplía el corpus, respalda tu trabajo y registra vínculos culturales.": "Développez le corpus, sauvegardez votre travail et documentez les liens culturels.",
+          "Exportar": "Exporter",
+          "Descarga tu base de datos en JSON.": "Téléchargez votre base de données en JSON.",
+          "Descargar JSON": "Télécharger JSON",
+          "Guardar notas": "Enregistrer les notes",
+          "Importar": "Importer",
+          "Reemplazar": "Remplacer",
+          "Fusionar (por id)": "Fusionner (par id)",
+          "Importar desde archivo": "Importer depuis un fichier",
+          "O pegar JSON": "Ou coller du JSON",
+          "Validar JSON": "Valider JSON",
+          "Sin referencias.": "Aucune référence.",
+          "Sin ejemplos.": "Aucun exemple.",
+          "Sin imágenes.": "Aucune image.",
+          "Sin variantes.": "Aucune variante.",
+          "Sin acepciones registradas.": "Aucune acception enregistrée.",
+          "Definición técnica": "Définition technique",
+          "Explicación": "Explication",
+          "Variantes": "Variantes",
+          "Polisemia (acepciones)": "Polysémie (acceptions)",
+          "Fuente no indicada": "Source non indiquée",
+          "Ejemplo general": "Exemple général",
+          "Acepción": "Acception",
+          "Año": "Année",
+          "Título": "Titre",
+          "Autor": "Auteur",
+          "Fuente": "Source",
+          "Nota": "Note",
+          "URL (si aplica)": "URL (le cas échéant)",
+          "Nota / pie de imagen": "Légende / note d’image",
+          "Cambios guardados.": "Modifications enregistrées.",
+          "Lema creado.": "Entrée créée.",
+          "Lema eliminado.": "Entrée supprimée.",
+          "Lema duplicado.": "Entrée dupliquée.",
+          "No hay 'terms'.": "Il n’y a pas de 'terms'.",
+          "JSON inválido: ": "JSON invalide : ",
+          "Importación completada.": "Importation terminée.",
+          "Filtros limpiados.": "Filtres effacés.",
+          "Edición cancelada.": "Modification annulée.",
+          "Notas guardadas.": "Notes enregistrées.",
+          "Corpus exportado.": "Corpus exporté.",
+          "Pega JSON o selecciona un archivo primero.": "Collez du JSON ou sélectionnez d’abord un fichier.",
+          "No se pudo leer el archivo.": "Le fichier n’a pas pu être lu.",
+          "Pega JSON o selecciona un archivo para importar.": "Collez du JSON ou sélectionnez un fichier à importer.",
+          "Esto reemplazará el corpus actual. ¿Continuar?": "Cela remplacera le corpus actuel. Continuer ?",
+          "Esto fusionará por id (los ids coincidentes se sobrescriben). ¿Continuar?": "Cela fusionnera par id (les ids correspondants seront écrasés). Continuer ?",
+          "Restablecido.": "Réinitialisé.",
+          "Imagen subida.": "Image téléchargée.",
+          "Error al subir la imagen.": "Erreur lors du téléchargement de l’image.",
+          "No hay resultados con los filtros actuales.": "Aucun résultat avec les filtres actuels.",
+          "(sin lema)": "(sans lemme)",
+          "✓ Completa": "✓ Complète",
+          "⚠ Incompleta": "⚠ Incomplète",
+          "✓ Ficha completa (definición, equivalentes, ejemplos y referencias presentes).": "✓ Fiche complète (définition, équivalents, exemples et références présents).",
+          "modo edición": "mode édition",
+          "Duplicar": "Dupliquer",
+          "Guardar": "Enregistrer",
+          "Ordenar A↔Z": "Trier A↔Z",
+          "Crear lema (Ctrl+N)": "Créer une entrée (Ctrl+N)",
+          "Importar/Exportar · Corpus": "Import/Export · Corpus",
+          "Restablecer datos (mantiene copia en descarga)": "Réinitialiser les données (avec téléchargement d’une sauvegarde)",
+          "Plataforma Terminográfica Multilingüe": "Plateforme terminologique multilingue",
+          "Cultura de la Sidra, Manzana y Patrimonio": "Culture du cidre, pomme et patrimoine",
+          "Plataforma Terminográfica Multilingüe para la Cultura de la Sidra y la Terminología de la Manzana": "Plateforme terminologique multilingue pour la culture du cidre et la terminologie de la pomme",
+          "Universidad de Oviedo": "Université d'Oviedo",
+          "Grupo de Investigación TradDisc": "Groupe de recherche TradDisc",
+          "Universidad de Oviedo · Grupo de Investigación TradDisc": "Université d'Oviedo · Groupe de recherche TradDisc",
+          "Acerca de": "À propos",
+          "Sobre el proyecto": "À propos du projet"
+        }
+      };
+      let currentUiLang = localStorage.getItem(UI_LANG_KEY) || 'es';
+      const domainIds = {
+        'Partes del llagar':'domain_press_parts',
+        'Piezas o herramientas':'domain_tools',
+        'Léxico geopónico':'domain_geoponic',
+        'Variedades de manzana':'domain_apple_varieties',
+        'Proceso de elaboración':'domain_process'
+      };
+      const domainLabels = {
+        domain_press_parts:{es:'Partes del llagar',en:'Cider press parts',de:'Teile der Kelter',fr:'Parties du pressoir'},
+        domain_tools:{es:'Piezas o herramientas',en:'Parts or tools',de:'Teile oder Werkzeuge',fr:'Pièces ou outils'},
+        domain_geoponic:{es:'Léxico geopónico',en:'Geoponic lexicon',de:'Geoponisches Lexikon',fr:'Lexique géoponique'},
+        domain_apple_varieties:{es:'Variedades de manzana',en:'Apple varieties',de:'Apfelsorten',fr:'Variétés de pomme'},
+        domain_process:{es:'Proceso de elaboración',en:'Production process',de:'Herstellungsprozess',fr:'Processus de production'}
+      };
+      const posLabels = {
+        'Sustantivo':{es:'Sustantivo',en:'Noun',de:'Substantiv',fr:'Nom'},
+        'Verbo':{es:'Verbo',en:'Verb',de:'Verb',fr:'Verbe'},
+        'Adjetivo':{es:'Adjetivo',en:'Adjective',de:'Adjektiv',fr:'Adjectif'},
+        'Adverbio':{es:'Adverbio',en:'Adverb',de:'Adverb',fr:'Adverbe'},
+        'Locución':{es:'Locución',en:'Phrase',de:'Redewendung',fr:'Locution'},
+        'Otro':{es:'Otro',en:'Other',de:'Andere',fr:'Autre'}
+      };
+      function t(s){ return currentUiLang==='es' ? s : (UI[currentUiLang]?.[s] ?? s); }
+      function domainLabel(s){ const id=domainIds[s]; return id ? domainLabels[id][currentUiLang] : t(s); }
+      function posLabel(s){ return posLabels[s]?.[currentUiLang] || t(s); }
+      function translateText(text){
+        let out = text;
+        if (/^\d+ resultado\(s\)$/.test(out)) {
+          const n = out.match(/^(\d+)/)[1];
+          if (currentUiLang==='en') return `${n} result(s)`;
+          if (currentUiLang==='de') return `${n} Ergebnis(se)`;
+          if (currentUiLang==='fr') return `${n} résultat(s)`;
+        }
+        if (/^OK · \d+ lema\(s\)$/.test(out)) {
+          const n = out.match(/(\d+)/)[1];
+          if (currentUiLang==='en') return `OK · ${n} entr${n==='1'?'y':'ies'}`;
+          if (currentUiLang==='de') return `OK · ${n} Eintrag/Einträge`;
+          if (currentUiLang==='fr') return `OK · ${n} entrée(s)`;
+        }
+        if (/^Importado \((replace|merge)\) · Total: \d+ lema\(s\)\.$/.test(out)) {
+          const m = out.match(/^Importado \((replace|merge)\) · Total: (\d+) lema\(s\)\.$/);
+          const mode = m[1], n=m[2];
+          if (currentUiLang==='en') return `Imported (${mode==='replace'?'replace':'merge'}) · Total: ${n} entr${n==='1'?'y':'ies'}.`;
+          if (currentUiLang==='de') return `Importiert (${mode==='replace'?'ersetzen':'zusammenführen'}) · Gesamt: ${n} Einträge.`;
+          if (currentUiLang==='fr') return `Importé (${mode==='replace'?'remplacer':'fusionner'}) · Total : ${n} entrée(s).`;
+        }
+        out = out.replace(/Acepción (\S+)/g, (_,n)=> currentUiLang==='en'?`Sense ${n}`: currentUiLang==='de'?`Bedeutung ${n}`:`Acception ${n}`);
+        out = out.replace(/(\d+) ejemplo\(s\)/g, (_,n)=> currentUiLang==='en'?`${n} example(s)`: currentUiLang==='de'?`${n} Beispiel(e)`: `${n} exemple(s)`);
+        out = out.replace(/(\d+) eq\./g, (_,n)=> currentUiLang==='en'?`${n} eq.`: currentUiLang==='de'?`${n} Äq.`: `${n} équ.`);
+        if (out.startsWith('⚠ Ficha incompleta: falta(n) ')) {
+          let rest = out.replace('⚠ Ficha incompleta: falta(n) ','').replace(/\.$/,'');
+          rest = rest.split(', ').map(x=>t(x)).join(', ');
+          if (currentUiLang==='en') return `⚠ Incomplete record: missing ${rest}.`;
+          if (currentUiLang==='de') return `⚠ Unvollständiger Datensatz: Es fehlen ${rest}.`;
+          if (currentUiLang==='fr') return `⚠ Fiche incomplète : il manque ${rest}.`;
+        }
+        return t(out);
+      }
+      function translateAttributes(root){
+        root.querySelectorAll('[placeholder],[title],[aria-label]').forEach(el=>{
+          ['placeholder','title','aria-label'].forEach(attr=>{
+            if(el.hasAttribute(attr)) el.setAttribute(attr, translateText(el.getAttribute(attr)));
+          });
+        });
+      }
+      function translateOptions(){
+        document.querySelectorAll('option').forEach(opt=>{
+          const txt = opt.textContent.trim();
+          if (posLabels[txt]) opt.textContent = posLabel(txt);
+          else if (domainIds[txt]) opt.textContent = domainLabel(txt);
+          else opt.textContent = translateText(txt);
+        });
+      }
+      function walkTranslate(root){
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+          acceptNode(node){ 
+            if (node.parentElement && (node.parentElement.closest('.no-translate') || node.parentElement.closest('footer'))) {
+              return NodeFilter.FILTER_REJECT;
+            }
+            return node.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT; 
+          }
+        });
+        let node;
+        while ((node = walker.nextNode())) {
+          node.nodeValue = translateText(node.nodeValue);
+        }
+      }
+      function relabelData(){
+        document.documentElement.lang = currentUiLang;
+        const h1 = document.querySelector('title');
+        if (h1) h1.textContent = 'POMONIA — ' + (currentUiLang==='en'?'Terminology tool':currentUiLang==='de'?'Terminologie-Werkzeug':'Outil terminologique');
+        document.querySelectorAll('.catBtn').forEach(btn=>{
+          const cat=btn.dataset.cat;
+          const span = btn.querySelector('.text-sm.font-medium');
+          if(!span) return;
+          if(cat==='__all__') span.textContent = translateText('Todas');
+          else span.textContent = domainLabel(cat);
+        });
+      }
+      function applyTranslations(){
+        translateOptions();
+        relabelData();
+        walkTranslate(document.body);
+        translateAttributes(document.body);
+      }
+      // patch helpers
+      const _toast = window.toast;
+      window.toast = function(msg){ return _toast(translateText(msg)); };
+      const _langLabel = window.langLabel;
+      if (_langLabel) window.langLabel = function(code){
+        const base = _langLabel(code);
+        return translateText(base);
+      };
+      const _pill = window.pill;
+      if (_pill) window.pill = function(text, tone='emerald'){
+        const maybe = domainIds[text] ? domainLabel(text) : (posLabels[text] ? posLabel(text) : translateText(text));
+        return _pill(maybe, tone);
+      };
+      // override render wrappers to retranslate after updates
+      const origRenderAll = window.renderAll;
+      window.renderAll = function(){ const r = origRenderAll.apply(this, arguments); applyTranslations(); return r; };
+      const origRenderDetail = window.renderDetail;
+      window.renderDetail = function(){ const r = origRenderDetail.apply(this, arguments); applyTranslations(); return r; };
+      const origPopulatePOS = window.populatePOS;
+      window.populatePOS = function(){ const r = origPopulatePOS.apply(this, arguments); applyTranslations(); return r; };
+      // initialize selector
+      const sel = document.getElementById('uiLang');
+      if (sel) {
+        sel.value = currentUiLang;
+        sel.addEventListener('change', ()=>{
+          currentUiLang = sel.value;
+          localStorage.setItem(UI_LANG_KEY, currentUiLang);
+          applyTranslations();
+          // rerender for dynamic strings
+          if (typeof window.renderAll === 'function') window.renderAll();
+        });
+      }
+      // first pass after current render
+      applyTranslations();
+    })();
+  </script>
+
 </body>
 </html>
 
